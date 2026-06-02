@@ -544,6 +544,159 @@ body.dark-mode thead th{color:var(--c1)}
 body.dark-mode .ds-card.alt .ds-num{color:var(--c0)}
 body.dark-mode .sico{opacity:.1}
 /* ============================================================
+   PACK PREMIUM (NOVA) — Galería Esmeralda + Champagne
+   Capa de refinamiento sobre los estilos base. Sin tocar nada.
+   ============================================================ */
+
+/* === COLORES PREMIUM === */
+:root {
+  --nova-verde-profundo: #0E4435;
+  --nova-verde-medio: #1B6B4F;
+  --nova-champagne: #EFC07B;
+  --nova-champagne-suave: #FBF2DF;
+  --nova-champagne-oscuro: #B89058;
+  --nova-crema: #FAF7F0;
+  --nova-borde-tenue: #EDE8DC;
+  --nova-texto-suave: #6B6F62;
+  --nova-texto-mute: #8B8478;
+}
+
+/* fondo crema más cálido y refinado */
+body { background-color: var(--nova-crema) !important; }
+
+/* tarjetas verdes con tono más joyero */
+.ds-card:not(.alt) {
+  background: linear-gradient(135deg, var(--nova-verde-medio), var(--nova-verde-profundo)) !important;
+}
+
+/* línea decorativa champagne en tarjetas verdes */
+.ds-card:not(.alt)::before {
+  background: radial-gradient(circle, rgba(239,192,123,.18), transparent 70%) !important;
+}
+
+/* PRÓXIMO SERVICIO: barra lateral champagne en vez de verde */
+.next-svc::before {
+  background: linear-gradient(180deg, var(--nova-champagne), var(--nova-champagne-oscuro)) !important;
+}
+
+/* badge "En vivo" más sofisticado */
+.live-dot, [class*="live"] .dot {
+  background: var(--nova-champagne) !important;
+}
+@keyframes novaPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(239,192,123,.55); }
+  60%     { box-shadow: 0 0 0 6px rgba(239,192,123,0); }
+}
+
+/* paneles con borde más cálido */
+.tl-panel, .map-panel, .next-svc, .pend-panel, .cw,
+.mobile-row {
+  border-color: var(--nova-borde-tenue) !important;
+}
+
+/* textos secundarios en gris-verde apagado (no gris frío) */
+.ds-lb, .ds-sub {
+  color: rgba(255,255,255,.78) !important;
+}
+.ds-card.alt .ds-lb,
+.ds-card.alt .ds-sub {
+  color: var(--nova-texto-mute) !important;
+}
+
+/* === BLOQUE 7 — DETALLES FINOS === */
+
+/* costos/montos en champagne oscuro (elegante) */
+.mobile-row-cost {
+  color: var(--nova-champagne-oscuro) !important;
+  font-weight: 500;
+}
+
+/* Saludo personalizado / header con más letterspacing */
+.tit { letter-spacing: 0.02em; }
+
+/* badges de estado más sofisticados (bordes redondeados pequeños, no pildoras) */
+.st {
+  border-radius: 5px !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.04em !important;
+  padding: 3px 9px !important;
+}
+
+/* === BLOQUE 3 — FILTROS COMPACTOS EN CELULAR === */
+/* Por defecto: filtros visibles. En celular: ocultos hasta que se pulse el botón */
+.filt-toggle { display: none; }
+@media (max-width: 768px) {
+  .filt-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid var(--nova-borde-tenue);
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-size: 13px;
+    color: var(--nova-verde-profundo);
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: 8px;
+  }
+  .filt-toggle:hover { background: var(--nova-crema); }
+  .filt-toggle .ti { font-size: 16px; }
+  /* filtros ocultos en móvil por defecto */
+  .filt { display: none; }
+  /* cuando se activa la clase 'open', se muestran */
+  .filt.open {
+    display: flex !important;
+    flex-direction: column;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid var(--nova-borde-tenue);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+}
+
+/* === BLOQUE 2 — LAYOUT: PRÓXIMO SERVICIO ARRIBA EN MÓVIL === */
+@media (max-width: 768px) {
+  /* Reordenar con flex order: próximo servicio primero, luego ingresos */
+  #pg-dash > #next-svc-bar { order: 1; }
+  #pg-dash > #day-summary { order: 2; }
+  #pg-dash > #pending-panel { order: 3; }
+  #pg-dash > .th, #pg-dash > .tw, #pg-dash > .mobile-table-wrap { order: 99; }
+  #pg-dash { display: flex; flex-direction: column; }
+}
+
+/* línea decorativa champagne en el panel de Próximo Servicio (parte superior) */
+.next-svc {
+  border-top: 1px solid var(--nova-borde-tenue) !important;
+  position: relative;
+}
+.next-svc::after {
+  content: '';
+  position: absolute;
+  top: -1px; left: 30%; right: 30%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--nova-champagne), transparent);
+}
+
+/* MODO OSCURO también se ve elegante */
+body.dark-mode {
+  background-color: #0A1410 !important;
+}
+body.dark-mode .ds-card.alt,
+body.dark-mode .tl-panel,
+body.dark-mode .map-panel,
+body.dark-mode .next-svc,
+body.dark-mode .pend-panel,
+body.dark-mode .mobile-row {
+  background: #121A16 !important;
+  border-color: #1F2A24 !important;
+}
+
+
+/* ============================================================
    PANEL LIMPIO (NOVA) — ocultar lo que estorba en el dashboard.
    Solo se ocultan de la vista; las funciones siguen intactas.
    ============================================================ */
@@ -903,6 +1056,7 @@ body.dark-mode .ds-card.alt {
     </div>
     <div class="cnt">
       <div id="pg-dash">
+        <div id="nova-saludo" style="font-family:Georgia,serif;font-size:18px;color:var(--nova-verde-profundo);margin:0 0 10px 0;letter-spacing:.01em;font-weight:400"></div>
         <div id="day-summary"></div>
         <div id="next-svc-bar"></div>
         <div id="alerts"></div>
@@ -911,6 +1065,7 @@ body.dark-mode .ds-card.alt {
         <div id="day-map"></div>
         <div class="sg" id="sg" style="display:none"></div>
         <div class="th"><h3>Servicios de Hoy</h3>
+          <button class="filt-toggle" onclick="document.querySelector('#pg-dash .filt').classList.toggle('open');this.classList.toggle('active')"><i class="ti ti-adjustments-horizontal"></i> Filtrar</button>
           <div class="filt">
             <input class="fi" id="dq" placeholder="Buscar cliente, vuelo..." oninput="rt('d')">
             <select class="fs" id="df" onchange="rt('d')"><option value="">Todos los estados</option><option>Solicitado</option><option>Confirmado</option><option>Chofer Asignado</option><option>En Proceso</option><option>Completado</option><option>Cancelado</option><option>No Show</option></select>
@@ -928,6 +1083,7 @@ body.dark-mode .ds-card.alt {
 
       <div id="pg-svcs" style="display:none">
         <div class="th"><h3>Todos los Servicios</h3>
+          <button class="filt-toggle" onclick="document.querySelector('#pg-svcs .filt').classList.toggle('open');this.classList.toggle('active')"><i class="ti ti-adjustments-horizontal"></i> Filtrar</button>
           <div class="filt">
             <input class="fi" id="sq" placeholder="Buscar cliente, vuelo, origen..." oninput="rt('s')">
             <select class="fs" id="sf" onchange="rt('s')"><option value="">Todos los estados</option><option>Solicitado</option><option>Confirmado</option><option>Chofer Asignado</option><option>En Proceso</option><option>Completado</option><option>Cancelado</option><option>No Show</option></select>
@@ -1071,103 +1227,111 @@ body.dark-mode .ds-card.alt {
 </div>
 
 <div id="pg-cot" style="display:none">
-  <div class="th"><h3>Nueva Cotizacion</h3></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
-    <!-- FORM -->
-    <div style="background:#FFFFFF;border:1px solid #F0EDE6;border-radius:10px;padding:1.4rem;box-shadow:0 2px 8px rgba(0,0,0,.05)">
-      <div class="fsep">Informacion del Cliente</div>
-      <div class="r2">
-        <div class="fg"><label class="fl">Nombre del Huesped *</label><input id="cot-name" placeholder="Juan Garcia"></div>
-        <div class="fg"><label class="fl">Telefono</label><input id="cot-phone" placeholder="+52 33 1234 5678"></div>
+  <div class="th"><h3>Nueva Cotización</h3></div>
+
+  <div style="background:#FFFFFF;border:1px solid #F0EDE6;border-radius:10px;padding:1.4rem;box-shadow:0 2px 8px rgba(0,0,0,.05);margin-bottom:1rem">
+
+    <!-- ENCABEZADO DEL EVENTO -->
+    <div class="fsep" style="font-family:Georgia,serif;font-size:14px;color:#0E4435;margin-bottom:.8rem;letter-spacing:.04em">Información del Evento</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1rem">
+      <div>
+        <label style="font-size:11px;color:#6B6F62;letter-spacing:.08em;text-transform:uppercase;font-weight:500">Evento</label>
+        <input id="cev_evento" class="cot-i" placeholder="Ej: Mundial 2026, Boda Gabriel..." style="width:100%;padding:9px 11px;border:1px solid #EDE8DC;border-radius:6px;font-size:13px;margin-top:3px">
       </div>
-      <div class="r2">
-        <div class="fg"><label class="fl">No. Habitacion</label><input id="cot-room" placeholder="1234"></div>
-        <div class="fg"><label class="fl">Pasajeros</label><select id="cot-pax"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8+</option></select></div>
+      <div>
+        <label style="font-size:11px;color:#6B6F62;letter-spacing:.08em;text-transform:uppercase;font-weight:500">Cliente</label>
+        <input id="cev_cliente" class="cot-i" placeholder="Nombre del cliente" style="width:100%;padding:9px 11px;border:1px solid #EDE8DC;border-radius:6px;font-size:13px;margin-top:3px">
       </div>
-      <div class="fsep">Detalle del Traslado</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:.6rem;background:#F8F6F1;border-radius:8px;padding:8px 12px">
-        <span style="font-size:10px;color:#555;font-weight:600">TARIFA:</span>
-        <div style="display:flex;background:#E8E4DC;border-radius:6px;overflow:hidden">
-          <button id="cot-btn-normal" onclick="setCotTariffMode('normal')" style="padding:5px 12px;border:none;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;background:#0E2A22;color:#FFF;font-family:Jost,sans-serif">⚪ Normal</button>
-          <button id="cot-btn-mundial" onclick="setCotTariffMode('mundial')" style="padding:5px 12px;border:none;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;background:transparent;color:#888;font-family:Jost,sans-serif">🌍 Mundial</button>
-        </div>
+      <div>
+        <label style="font-size:11px;color:#6B6F62;letter-spacing:.08em;text-transform:uppercase;font-weight:500">Destino / Sede</label>
+        <input id="cev_destino" class="cot-i" placeholder="Disposición en CDMX, GDL..." style="width:100%;padding:9px 11px;border:1px solid #EDE8DC;border-radius:6px;font-size:13px;margin-top:3px">
       </div>
-      <div class="r2">
-        <div class="fg"><label class="fl">Origen *</label>
-          <select id="cot-ori" onchange="cotAutoPrice()">
-            <option value="">Selecciona origen...</option>
-            <option>JW Marriott</option><option>Aeropuerto GDL</option><option>Aeropuerto - FBO</option>
-            <option>Hotel Riu</option><option>Camino Real</option><option>Hotel Demetria</option>
-            <option>Quinta Real</option><option>Westin / Zona Expo</option><option>Andares</option>
-            <option>Zona Providencia</option><option>Zona Minerva</option><option>Zona Chapultepec</option>
-            <option>Tlaquepaque</option><option>Tonala</option><option>Centro Historico GDL</option>
-            <option>Chapala / Ajijic / Jocotepec</option><option>Tequila / Guachimontones</option>
-            <option>Rancho Contento</option><option>Finca By Alofa</option>
-            <option value="otros-ori-cot">Otro (escribir manual)</option>
-          </select>
-          <input id="cot-ori-otros" placeholder="Escribe el origen..." style="display:none;margin-top:6px">
-        </div>
-        <div class="fg"><label class="fl">Destino *</label>
-          <select id="cot-dest" onchange="cotAutoPrice()">
-            <option value="">Selecciona destino...</option>
-            <option>Aeropuerto GDL</option><option>JW Marriott</option><option>Hotel - Aeropuerto</option>
-            <option>Disposicion por hora (min 3hrs)</option>
-            <option>Centro Historico GDL</option><option>Basilica de Zapopan</option>
-            <option>Ferromex / J.Cuervo Express</option><option>Zona Chapultepec</option>
-            <option>Zona Minerva</option><option>Zona Providencia</option><option>Zona Chapalita</option>
-            <option>Zona Expo / Plaza del Sol</option><option>Andares</option>
-            <option>Chapala / Ajijic / Jocotepec</option><option>Tequila / Guachimontones</option>
-            <option>Tlaquepaque</option><option>Tonala</option>
-            <option>Auditorio Telmex</option><option>Arena VFG</option>
-            <option>Teatro Diana</option><option>Teatro Degollado</option>
-            <option>Sonora Grill Prime (Real Acueducto)</option><option>Santo Coyote Real</option>
-            <option>Casa Bariachi</option><option>Barberini</option><option>Lago del Rey</option>
-            <option>Estadio Akron</option><option>Estadio Jalisco</option>
-            <option>El Cielo</option><option>El Rio Country Club</option><option>Rancho Contento</option>
-            <option>Central Nueva Tlaquepaque</option><option>Central Vieja</option>
-            <option>Plaza Galerias</option><option>Plaza Andares</option><option>Plazas Outlet</option>
-            <option>Hotel Riu</option><option>Camino Real</option><option>Quinta Real</option>
-            <option>Consulado Americano</option><option>IPADE</option><option>ITESO</option>
-            <option>Tec de Monterrey</option><option>Flextronics Norte</option><option>Technology Park</option>
-            <option>Puerta de Hierro Andares</option><option>Hospital San Javier</option>
-            <option value="otros-dest-cot">Otro (escribir manual)</option>
-          </select>
-          <input id="cot-dest-otros" placeholder="Escribe el destino..." style="display:none;margin-top:6px">
-        </div>
+      <div>
+        <label style="font-size:11px;color:#6B6F62;letter-spacing:.08em;text-transform:uppercase;font-weight:500">Fecha del Evento</label>
+        <input id="cev_fechas" class="cot-i" placeholder="10 al 12 junio 2026" style="width:100%;padding:9px 11px;border:1px solid #EDE8DC;border-radius:6px;font-size:13px;margin-top:3px">
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:.5rem;margin-bottom:.4rem">
-        <div class="fg"><label class="fl">Fecha Inicio</label><input type="date" id="cot-date" onchange="updateCotPreview()"></div>
-        <div class="fg"><label class="fl">Fecha Fin (opcional)</label><input type="date" id="cot-date-end" onchange="updateCotPreview()"></div>
-        <div class="fg"><label class="fl">Hora</label><input type="text" id="cot-time" placeholder="00:00" maxlength="5" oninput="fmtTime(this)"></div>
-        <div class="fg"><label class="fl">Vehiculo</label><select id="cot-veh" onchange="cotAutoPrice()"><option>Sedan ejecutivo</option><option>SUV ejecutiva</option><option>Van de lujo</option></select></div>
+      <div>
+        <label style="font-size:11px;color:#6B6F62;letter-spacing:.08em;text-transform:uppercase;font-weight:500">Contacto Cliente</label>
+        <input id="cev_contacto" class="cot-i" placeholder="Nombre del contacto" style="width:100%;padding:9px 11px;border:1px solid #EDE8DC;border-radius:6px;font-size:13px;margin-top:3px">
       </div>
-      <div class="r2">
-        <div class="fg"><label class="fl">Numero de Vuelo</label><input id="cot-flight" placeholder="AM 456"></div>
-        <div class="fg"><label class="fl">Metodo de Pago</label><select id="cot-pay"><option>Efectivo</option><option>Tarjeta de credito</option><option>Tarjeta de debito</option><option>Transferencia</option><option>Cargo a habitacion</option><option>Link</option><option>Credito del Hotel</option></select></div>
+      <div>
+        <label style="font-size:11px;color:#6B6F62;letter-spacing:.08em;text-transform:uppercase;font-weight:500">Email</label>
+        <input id="cev_email" class="cot-i" placeholder="correo@ejemplo.com" style="width:100%;padding:9px 11px;border:1px solid #EDE8DC;border-radius:6px;font-size:13px;margin-top:3px">
       </div>
-      <div class="fg"><label class="fl">Costo (MXN)</label><input type="number" id="cot-cost" placeholder="0.00" min="0" step="0.01">
-        <button type="button" id="cot-btn-dist" onclick="calcDistPrice('cot')" style="margin-top:7px;width:100%;padding:9px;background:var(--aubg);color:var(--au);border:1px solid var(--bo2);border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;font-family:'Jost',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px"><i class="ti ti-route"></i> Calcular precio por distancia</button>
-        <div id="cot-dist-result" style="font-size:11px;color:var(--c2);margin-top:5px;min-height:14px"></div>
+      <div>
+        <label style="font-size:11px;color:#6B6F62;letter-spacing:.08em;text-transform:uppercase;font-weight:500">Teléfono</label>
+        <input id="cev_tel" class="cot-i" placeholder="Teléfono cliente" style="width:100%;padding:9px 11px;border:1px solid #EDE8DC;border-radius:6px;font-size:13px;margin-top:3px">
       </div>
-      <div class="fg"><label class="fl">Notas adicionales</label><textarea id="cot-notes" placeholder="Instrucciones especiales..."></textarea></div>
-      <div style="display:flex;gap:8px;margin-top:.8rem;flex-wrap:wrap">
-        <button onclick="genCotPDF()" style="flex:2;padding:11px;background:#0E2A22;color:#FFF;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:6px"><i class="ti ti-file-type-pdf"></i> GENERAR PDF</button>
-        <button onclick="cotToService()" style="flex:1;padding:11px;background:#1B6B4F;color:#FFF;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:6px"><i class="ti ti-plus"></i> CREAR SERVICIO</button>
-        <button onclick="clearCot()" style="padding:11px 14px;background:transparent;border:1px solid #E0E0E0;border-radius:6px;font-size:11px;color:#AAA;cursor:pointer">Limpiar</button>
+      <div>
+        <label style="font-size:11px;color:#6B6F62;letter-spacing:.08em;text-transform:uppercase;font-weight:500"># Pax</label>
+        <input id="cev_pax" type="number" class="cot-i" placeholder="5" value="1" style="width:100%;padding:9px 11px;border:1px solid #EDE8DC;border-radius:6px;font-size:13px;margin-top:3px">
+      </div>
+      <div>
+        <label style="font-size:11px;color:#6B6F62;letter-spacing:.08em;text-transform:uppercase;font-weight:500">Moneda</label>
+        <select id="cev_moneda" class="cot-i" style="width:100%;padding:9px 11px;border:1px solid #EDE8DC;border-radius:6px;font-size:13px;margin-top:3px">
+          <option value="MXN">Pesos MX</option>
+          <option value="USD">USD</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;color:#6B6F62;letter-spacing:.08em;text-transform:uppercase;font-weight:500">Cont. Nova</label>
+        <input id="cev_contnova" class="cot-i" value="Carlos Martínez" style="width:100%;padding:9px 11px;border:1px solid #EDE8DC;border-radius:6px;font-size:13px;margin-top:3px">
       </div>
     </div>
-    <!-- PREVIEW -->
-    <div style="background:#FFFFFF;border:1px solid #F0EDE6;border-radius:10px;padding:1.4rem;box-shadow:0 2px 8px rgba(0,0,0,.05)">
-      <div class="fsep">Vista Previa</div>
-      <div id="cot-preview" style="font-size:12px;color:#555;line-height:2">
-        <div style="text-align:center;color:#CCC;padding:2rem">
-          <i class="ti ti-file-invoice" style="font-size:40px;display:block;margin-bottom:.5rem"></i>
-          Completa el formulario para ver la vista previa
-        </div>
-      </div>
+
+    <!-- TABLA DE CONCEPTOS -->
+    <div class="fsep" style="font-family:Georgia,serif;font-size:14px;color:#0E4435;margin:1.4rem 0 .8rem 0;letter-spacing:.04em;display:flex;justify-content:space-between;align-items:center">
+      <span>Servicios / Conceptos</span>
+      <button onclick="cotAgregarConcepto()" style="background:#0E4435;color:#fff;border:none;padding:7px 14px;border-radius:6px;font-size:11px;font-weight:600;letter-spacing:.06em;cursor:pointer;text-transform:uppercase">+ Agregar Concepto</button>
+    </div>
+
+    <div style="overflow-x:auto;border:1px solid #EDE8DC;border-radius:8px">
+      <table id="cot-tbl" style="width:100%;border-collapse:collapse;min-width:760px">
+        <thead style="background:#0E4435;color:#fff">
+          <tr style="font-size:10px;letter-spacing:.08em;text-transform:uppercase">
+            <th style="padding:9px 8px;text-align:left;font-weight:500">Concepto</th>
+            <th style="padding:9px 8px;text-align:left;font-weight:500;width:200px">Descripción</th>
+            <th style="padding:9px 8px;text-align:center;font-weight:500;width:70px">Cant.</th>
+            <th style="padding:9px 8px;text-align:center;font-weight:500;width:60px">Días</th>
+            <th style="padding:9px 8px;text-align:right;font-weight:500;width:90px">Costo</th>
+            <th style="padding:9px 8px;text-align:right;font-weight:500;width:90px">Subtotal</th>
+            <th style="padding:9px 8px;text-align:right;font-weight:500;width:80px">IVA 16%</th>
+            <th style="padding:9px 8px;text-align:right;font-weight:500;width:90px">Total</th>
+            <th style="padding:9px 8px;width:40px"></th>
+          </tr>
+        </thead>
+        <tbody id="cot-rows"></tbody>
+        <tfoot>
+          <tr style="background:#FAF7F0;border-top:2px solid #0E4435">
+            <td colspan="5" style="padding:11px 12px;text-align:right;font-size:11px;color:#6B6F62;letter-spacing:.08em;text-transform:uppercase;font-weight:500">Subtotal</td>
+            <td id="cot-sumSub" style="padding:11px 12px;text-align:right;font-family:Georgia,serif;font-size:14px;color:#0E4435;font-weight:500">$0.00</td>
+            <td id="cot-sumIva" style="padding:11px 12px;text-align:right;font-family:Georgia,serif;font-size:14px;color:#0E4435;font-weight:500">$0.00</td>
+            <td id="cot-sumTotal" style="padding:11px 12px;text-align:right;font-family:Georgia,serif;font-size:16px;color:#0E4435;font-weight:600">$0.00</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- SERVICIOS COORDINADOR TOTAL -->
+    <div class="fsep" style="font-family:Georgia,serif;font-size:14px;color:#0E4435;margin:1.4rem 0 .6rem 0;letter-spacing:.04em">Servicios Coordinador Total <span style="font-size:11px;color:#8B8478;font-weight:400;font-style:italic">(opcional)</span></div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:.7rem;background:#FAF7F0;padding:12px 14px;border-radius:8px;border:1px solid #EDE8DC">
+      <input id="cev_coord_desc" placeholder="Descripción del servicio coordinador (opcional)" style="padding:9px 11px;border:1px solid #EDE8DC;border-radius:6px;font-size:12px;background:#fff">
+      <input id="cev_coord_monto" type="number" placeholder="Monto $" style="padding:9px 11px;border:1px solid #EDE8DC;border-radius:6px;font-size:12px;text-align:right;background:#fff">
+    </div>
+
+    <!-- OBSERVACIONES -->
+    <div class="fsep" style="font-family:Georgia,serif;font-size:14px;color:#0E4435;margin:1.4rem 0 .6rem 0;letter-spacing:.04em">Observaciones</div>
+    <textarea id="cev_obs" rows="3" style="width:100%;padding:11px;border:1px solid #EDE8DC;border-radius:6px;font-size:12px;font-family:inherit;line-height:1.6;resize:vertical">El total de servicios cotizados deberá ser cubierto al 100% al momento de generar la reserva. En caso de realizar cambios en la solicitud original y/o cambio en el número de personas, la presente propuesta será renegociada. En transportación, cualquier cambio en el itinerario, destinos fuera de la ZMG y horas extras serán negociadas. Cotización sujeta a disponibilidad. Toda reservación requiere el 50% de anticipo para bloqueo de unidades.</textarea>
+
+    <!-- BOTONES -->
+    <div style="display:flex;gap:.7rem;margin-top:1.2rem">
+      <button onclick="cotEvLimpiar()" style="flex:1;padding:11px;background:#fff;color:#6B6F62;border:1px solid #EDE8DC;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;letter-spacing:.08em;text-transform:uppercase">Limpiar</button>
+      <button onclick="cotEvPDF()" style="flex:2;padding:11px;background:linear-gradient(135deg,#1B6B4F,#0E4435);color:#FFF;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.1em;display:flex;align-items:center;justify-content:center;gap:6px;text-transform:uppercase"><i class="ti ti-file-type-pdf"></i> Generar PDF</button>
     </div>
   </div>
 </div>
+
 
 <div id="pg-users" style="display:none">
         <div class="th"><h3>Control de Usuarios</h3></div>
@@ -2326,10 +2490,11 @@ function gp(pid,el){
     oM('ov-partner');
     return;
   }
-  if(pid==='pg-dash'){rStats();renderDaySummary();renderPending();renderTimeline();renderMap();rt('d');chkAlerts();}
+  if(pid==='pg-dash'){rStats();renderDaySummary();renderPending();renderTimeline();renderMap();rt('d');chkAlerts();novaSaludo();}
   if(pid==='pg-svcs')rt('s');
   if(pid==='pg-cal')rCal();
   if(pid==='pg-users')rUsers();
+  if(pid==='pg-reports')renderEgresos();
   cSB();
 }
 
@@ -2386,6 +2551,18 @@ function renderDaySummary(){
     return '<div class="ds-card'+(c.alt?' alt':'')+'"><i class="ti '+c.ic+' ds-ic"></i><div class="ds-lb">'+c.lb+'</div><div class="ds-val">'+c.val+'</div><div class="ds-sub">'+c.sb+'</div>'+(c.spark?sparkSvg():'')+'</div>';
   }).join('')+'</div>';
   novaAnimarNumeros(el);
+}
+
+// Saludo personalizado segun hora del dia
+function novaSaludo(){
+  try {
+    var el = document.getElementById('nova-saludo');
+    if (!el) return;
+    var h = new Date().getHours();
+    var saludo = h < 12 ? 'Buenos días' : (h < 19 ? 'Buenas tardes' : 'Buenas noches');
+    var nombre = (window.U && U.role === 'admin') ? 'Santiago' : '';
+    el.textContent = nombre ? saludo + ', ' + nombre : saludo;
+  } catch(e){}
 }
 
 // Anima los valores que son numeros puros, de 0 a su valor (los textos los deja igual)
@@ -3259,7 +3436,65 @@ function verifyPartner(){
   }
 }
 
-var _egresos=[];
+var _egresos=[
+    {desc:'Derecho de Piso',amt:538.0},
+    {desc:'Uber Salvador',amt:116.0},
+    {desc:'Gasolina Tahoe',amt:1671.0},
+    {desc:'Terminales Mercado Pago',amt:267.0},
+    {desc:'Pago comisiones Hotel',amt:3972.5},
+    {desc:'Uber Salvador',amt:132.0},
+    {desc:'Derecho de Piso',amt:422.0},
+    {desc:'Derecho de Piso',amt:422.0},
+    {desc:'Gasolina Tahoe',amt:1400.0},
+    {desc:'Pago Externos',amt:6650.0},
+    {desc:'Lavado Tahoe y Mazda',amt:400.0},
+    {desc:'Gasolina Mazda',amt:888.0},
+    {desc:'Derecho de Piso',amt:538.0},
+    {desc:'Gasolina Mazda',amt:870.0},
+    {desc:'Gasolina Tahoe',amt:1540.0},
+    {desc:'Derecho de Piso',amt:422.0},
+    {desc:'Derecho de Piso',amt:422.0},
+    {desc:'Derecho de Piso',amt:538.0},
+    {desc:'Derecho de Piso',amt:538.0},
+    {desc:'Gasolina Mazda',amt:878.0},
+    {desc:'Gps vehiculos',amt:496.0},
+    {desc:'Pago comisiones Hotel',amt:6195.0},
+    {desc:'Pago Nominas y externos',amt:8750.0},
+    {desc:'Nomina Carlos',amt:9000.0},
+    {desc:'Gasolina Mazda',amt:770.0},
+    {desc:'Gasolina Tahoe',amt:1500.0},
+    {desc:'Lavado Tahoe',amt:220.0},
+    {desc:'Derecho de Piso',amt:538.0},
+    {desc:'Derecho de Piso',amt:538.0},
+    {desc:'Derecho de Piso',amt:422.0},
+    {desc:'Derecho de Piso',amt:422.0},
+    {desc:'Pago comisiones Hotel',amt:7640.0},
+    {desc:'Gasolina Tahoe',amt:2115.0},
+    {desc:'Gasolina Mazda',amt:1000.0},
+    {desc:'Lavado Mazda',amt:180.0},
+    {desc:'Gasolina Mazda',amt:500.0},
+    {desc:'Derecho de Piso',amt:422.0},
+    {desc:'Gasolina Mazda',amt:960.0},
+    {desc:'Derecho de Piso',amt:538.0},
+    {desc:'Nomina Operadores',amt:9800.0},
+    {desc:'Pago Servicios Gustavo Castillo',amt:3000.0},
+    {desc:'Uniformes Personal',amt:6300.0},
+    {desc:'Gasolina Tahoe',amt:1500.0},
+    {desc:'Caseta Tequila',amt:214.0},
+    {desc:'Estacionamiento Aeropuerto',amt:55.0},
+    {desc:'Extension Byd',amt:220.0},
+    {desc:'Gasolina Byd 1',amt:839.0},
+    {desc:'Derecho de Piso',amt:422.0},
+    {desc:'Pago propinas operadores',amt:2785.5},
+    {desc:'Derecho de Piso',amt:538.0},
+    {desc:'Derecho de Piso',amt:422.0},
+    {desc:'Gasolina Mazda',amt:820.0},
+    {desc:'Derecho de Piso',amt:538.0},
+    {desc:'Derecho de Piso',amt:422.0},
+    {desc:'Gasolina Tahoe',amt:2290.0},
+    {desc:'Uber Andres',amt:146.0},
+    {desc:'Pago comisiones Hotel',amt:7587.5},
+  ];
 
 function addEgreso(){
   var desc=document.getElementById('egreso-desc').value.trim();
@@ -3972,6 +4207,383 @@ setTimeout(function(){
   var cd=document.getElementById('cot-date');
   if(cd)cd.value=td();
 },600);
+
+// ============================================================
+// COTIZACIÓN MULTI-CONCEPTO (NOVA)
+// ============================================================
+var COT_ROWS = 0;
+
+function cotAgregarConcepto(){
+  var tb = document.getElementById('cot-rows');
+  if(!tb) return;
+  COT_ROWS++;
+  var rid = 'cr_' + COT_ROWS;
+  var tr = document.createElement('tr');
+  tr.id = rid;
+  tr.style.borderBottom = '1px solid #EDE8DC';
+  tr.innerHTML =
+    '<td style="padding:6px"><input class="cot-c-input" data-row="'+rid+'" data-fld="concepto" placeholder="Disposición CDMX" style="width:100%;padding:7px 8px;border:1px solid #EDE8DC;border-radius:4px;font-size:12px"></td>' +
+    '<td style="padding:6px"><input class="cot-c-input" data-row="'+rid+'" data-fld="desc" placeholder="Traslados y movimientos" style="width:100%;padding:7px 8px;border:1px solid #EDE8DC;border-radius:4px;font-size:12px"></td>' +
+    '<td style="padding:6px"><input class="cot-c-input" data-row="'+rid+'" data-fld="cant" placeholder="12 Hrs" style="width:100%;padding:7px 6px;border:1px solid #EDE8DC;border-radius:4px;font-size:12px;text-align:center"></td>' +
+    '<td style="padding:6px"><input class="cot-c-num" data-row="'+rid+'" data-fld="dias" type="number" value="1" min="1" style="width:100%;padding:7px 6px;border:1px solid #EDE8DC;border-radius:4px;font-size:12px;text-align:center"></td>' +
+    '<td style="padding:6px"><input class="cot-c-num" data-row="'+rid+'" data-fld="costo" type="number" placeholder="0" style="width:100%;padding:7px 6px;border:1px solid #EDE8DC;border-radius:4px;font-size:12px;text-align:right"></td>' +
+    '<td class="cot-c-sub" style="padding:7px 12px;text-align:right;font-size:12px;color:#0E4435">$0.00</td>' +
+    '<td class="cot-c-iva" style="padding:7px 12px;text-align:right;font-size:12px;color:#6B6F62">$0.00</td>' +
+    '<td class="cot-c-tot" style="padding:7px 12px;text-align:right;font-size:13px;color:#0E4435;font-weight:600">$0.00</td>' +
+    '<td style="padding:6px;text-align:center"><button onclick="cotQuitarConcepto(\'' + rid + '\')" style="background:#fff;border:1px solid #F08585;color:#C13A3A;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:11px">✕</button></td>';
+  tb.appendChild(tr);
+  // listeners para recalcular
+  tr.querySelectorAll('.cot-c-num').forEach(function(inp){
+    inp.addEventListener('input', cotRecalcular);
+  });
+}
+
+function cotQuitarConcepto(rid){
+  var tr = document.getElementById(rid);
+  if(tr) tr.remove();
+  cotRecalcular();
+}
+
+function cotRecalcular(){
+  var rows = document.querySelectorAll('#cot-rows tr');
+  var sumSub = 0, sumIva = 0, sumTot = 0;
+  rows.forEach(function(tr){
+    var dias = parseFloat(tr.querySelector('[data-fld="dias"]').value) || 0;
+    var costo = parseFloat(tr.querySelector('[data-fld="costo"]').value) || 0;
+    var sub = costo * dias;
+    var iva = sub * 0.16;
+    var tot = sub + iva;
+    tr.querySelector('.cot-c-sub').textContent = '$' + sub.toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
+    tr.querySelector('.cot-c-iva').textContent = '$' + iva.toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
+    tr.querySelector('.cot-c-tot').textContent = '$' + tot.toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
+    sumSub += sub;
+    sumIva += iva;
+    sumTot += tot;
+  });
+  document.getElementById('cot-sumSub').textContent = '$' + sumSub.toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('cot-sumIva').textContent = '$' + sumIva.toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('cot-sumTotal').textContent = '$' + sumTot.toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function cotEvLimpiar(){
+  if(!confirm('¿Limpiar toda la cotización?')) return;
+  ['cev_evento','cev_cliente','cev_destino','cev_fechas','cev_contacto','cev_email','cev_tel','cev_pax'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.value = (id === 'cev_pax') ? '1' : '';
+  });
+  document.getElementById('cot-rows').innerHTML = '';
+  cotRecalcular();
+}
+
+function cotEvPDF(){
+  try {
+    var ev = document.getElementById('cev_evento').value || 'Sin nombre';
+    var cliente = document.getElementById('cev_cliente').value || '';
+    var destino = document.getElementById('cev_destino').value || '';
+    var fechas = document.getElementById('cev_fechas').value || '';
+    var contacto = document.getElementById('cev_contacto').value || '';
+    var email = document.getElementById('cev_email').value || '';
+    var tel = document.getElementById('cev_tel').value || '';
+    var pax = document.getElementById('cev_pax').value || '1';
+    var moneda = document.getElementById('cev_moneda').value || 'MXN';
+    var contNova = document.getElementById('cev_contnova').value || 'Carlos Martinez';
+    var obs = document.getElementById('cev_obs').value || '';
+    var coordDesc = (document.getElementById('cev_coord_desc')||{}).value || '';
+    var coordMonto = parseFloat((document.getElementById('cev_coord_monto')||{}).value) || 0;
+    
+    var rows = document.querySelectorAll('#cot-rows tr');
+    if(rows.length === 0){
+      alert('Agrega al menos un concepto a la cotizacion');
+      return;
+    }
+    
+    var conceptos = [];
+    rows.forEach(function(tr){
+      conceptos.push({
+        concepto: tr.querySelector('[data-fld="concepto"]').value || '',
+        desc: tr.querySelector('[data-fld="desc"]').value || '',
+        cant: tr.querySelector('[data-fld="cant"]').value || '',
+        dias: parseFloat(tr.querySelector('[data-fld="dias"]').value) || 0,
+        costo: parseFloat(tr.querySelector('[data-fld="costo"]').value) || 0
+      });
+    });
+    
+    var doc = new jspdf.jsPDF('p','mm','letter');
+    var W = 215.9, H = 279.4, M = 14;
+    var y;
+    
+    // ===== HEADER VERDE PROFUNDO =====
+    doc.setFillColor(14, 42, 34); // NOVA_DARK
+    doc.rect(M, 10, W-2*M, 32, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica','bold'); doc.setFontSize(20);
+    doc.text('NOVA TRANSPORTS', W/2, 19, {align:'center'});
+    
+    doc.setFont('helvetica','normal'); doc.setFontSize(8);
+    doc.setTextColor(200, 212, 206);
+    doc.text('Transportacion Ejecutiva . Executive Transportation', W/2, 24, {align:'center'});
+    
+    doc.setFont('helvetica','bold'); doc.setFontSize(13);
+    doc.setTextColor(255, 255, 255);
+    doc.text('PROPUESTA DE SERVICIOS', W/2, 33, {align:'center'});
+    
+    doc.setFont('helvetica','italic'); doc.setFontSize(9);
+    doc.setTextColor(200, 212, 206);
+    doc.text('Service Proposal', W/2, 38, {align:'center'});
+    
+    // ===== INFO EVENTO (2 columnas) =====
+    y = 50;
+    var infoIzq = [
+      ['EVENTO', 'Event', ev],
+      ['CLIENTE', 'Client', cliente],
+      ['DESTINO', 'Destination', destino],
+      ['FECHA EVENTO', 'Event Dates', fechas],
+      ['CONTACTO', 'Contact', contacto],
+      ['FECHA COT.', 'Quote Date', new Date().toLocaleDateString('es-MX')]
+    ];
+    var infoDer = [
+      ['MONEDA', 'Currency', moneda === 'MXN' ? 'Pesos MX' : 'USD'],
+      ['SEDE', 'Venue', destino],
+      ['# PAX', 'Pax', pax],
+      ['E-MAIL', 'Email', email],
+      ['CONT. NOVA', 'Nova Contact', contNova],
+      ['TELEFONO', 'Phone', tel]
+    ];
+    
+    for(var i=0; i<6; i++){
+      var yRow = y + i*9;
+      // izquierda
+      doc.setFont('helvetica','bold'); doc.setFontSize(8);
+      doc.setTextColor(14, 42, 34);
+      doc.text(infoIzq[i][0], M+1, yRow);
+      doc.setFont('helvetica','italic'); doc.setFontSize(6.5);
+      doc.setTextColor(136, 136, 136);
+      doc.text(infoIzq[i][1], M+1, yRow+3);
+      doc.setFont('helvetica','normal'); doc.setFontSize(9);
+      doc.setTextColor(34, 34, 34);
+      doc.text(String(infoIzq[i][2]||'').substring(0,40), M+30, yRow+1);
+      // linea divisoria sutil
+      doc.setDrawColor(232, 226, 208);
+      doc.setLineWidth(0.2);
+      doc.line(M, yRow+5, W/2-2, yRow+5);
+      
+      // derecha
+      doc.setFont('helvetica','bold'); doc.setFontSize(8);
+      doc.setTextColor(14, 42, 34);
+      doc.text(infoDer[i][0], W/2+4, yRow);
+      doc.setFont('helvetica','italic'); doc.setFontSize(6.5);
+      doc.setTextColor(136, 136, 136);
+      doc.text(infoDer[i][1], W/2+4, yRow+3);
+      doc.setFont('helvetica','normal'); doc.setFontSize(9);
+      doc.setTextColor(34, 34, 34);
+      doc.text(String(infoDer[i][2]||'').substring(0,40), W/2+33, yRow+1);
+      doc.line(W/2+2, yRow+5, W-M, yRow+5);
+    }
+    
+    // ===== TABLA DE SERVICIOS =====
+    var yT = y + 56;
+    doc.setFillColor(14, 42, 34);
+    doc.rect(M, yT, W-2*M, 10, 'F');
+    
+    // Headers bilingues
+    var cols = [
+      {x: M+2,   w: 28, t: 'CONCEPTO', e: 'Service',    al: 'left'},
+      {x: M+32,  w: 50, t: 'DESCRIPCION', e: 'Description', al: 'left'},
+      {x: M+84,  w: 14, t: 'CANT.', e: 'Qty',         al: 'center'},
+      {x: M+100, w: 10, t: 'DIAS', e: 'Days',         al: 'center'},
+      {x: M+112, w: 20, t: 'COSTO', e: 'Unit Cost',   al: 'right'},
+      {x: M+134, w: 22, t: 'SUBTOTAL', e: 'Subtotal', al: 'right'},
+      {x: M+158, w: 16, t: 'IVA 16%', e: 'VAT 16%',   al: 'right'},
+      {x: M+176, w: 20, t: 'TOTAL', e: 'Total',       al: 'right'}
+    ];
+    doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
+    doc.setTextColor(255);
+    cols.forEach(function(c){
+      var tx = c.x;
+      if(c.al === 'center') tx = c.x + c.w/2;
+      if(c.al === 'right') tx = c.x + c.w - 1;
+      doc.text(c.t, tx, yT+4, {align: c.al});
+    });
+    doc.setFont('helvetica','italic'); doc.setFontSize(6);
+    doc.setTextColor(200, 212, 206);
+    cols.forEach(function(c){
+      var tx = c.x;
+      if(c.al === 'center') tx = c.x + c.w/2;
+      if(c.al === 'right') tx = c.x + c.w - 1;
+      doc.text(c.e, tx, yT+8, {align: c.al});
+    });
+    
+    // ===== FILAS DE SERVICIOS =====
+    var yR = yT + 10;
+    var totSub = 0, totIva = 0, totTot = 0;
+    var rowH = 9;
+    
+    conceptos.forEach(function(c, i){
+      var sub = c.costo * c.dias;
+      var iva = sub * 0.16;
+      var tot = sub + iva;
+      totSub += sub; totIva += iva; totTot += tot;
+      
+      // Filas alternadas
+      if(i % 2 === 0){
+        doc.setFillColor(250, 247, 240);
+        doc.rect(M, yR, W-2*M, rowH, 'F');
+      }
+      // Linea inferior
+      doc.setDrawColor(232, 226, 208);
+      doc.setLineWidth(0.2);
+      doc.line(M, yR+rowH, W-M, yR+rowH);
+      
+      doc.setFont('helvetica','normal'); doc.setFontSize(8);
+      doc.setTextColor(34, 34, 34);
+      doc.text(String(c.concepto).substring(0,18), M+2, yR+5);
+      doc.text(String(c.desc).substring(0,32), M+32, yR+5);
+      doc.text(String(c.cant).substring(0,8), M+91, yR+5, {align:'center'});
+      doc.text(String(c.dias), M+105, yR+5, {align:'center'});
+      doc.text('$'+c.costo.toLocaleString('en-US',{minimumFractionDigits:2}), M+131, yR+5, {align:'right'});
+      doc.text('$'+sub.toLocaleString('en-US',{minimumFractionDigits:2}), M+155, yR+5, {align:'right'});
+      doc.text('$'+iva.toLocaleString('en-US',{minimumFractionDigits:2}), M+173, yR+5, {align:'right'});
+      doc.setFont('helvetica','bold');
+      doc.text('$'+tot.toLocaleString('en-US',{minimumFractionDigits:2}), M+195, yR+5, {align:'right'});
+      
+      yR += rowH;
+    });
+    
+    // ===== TOTALES =====
+    yR += 4;
+    doc.setDrawColor(14, 42, 34);
+    doc.setLineWidth(0.4);
+    doc.line(M+110, yR-1, W-M, yR-1);
+    
+    doc.setFont('helvetica','bold'); doc.setFontSize(9);
+    doc.setTextColor(14, 42, 34);
+    doc.text('SUBTOTAL', M+155, yR+5, {align:'right'});
+    doc.setFont('helvetica','italic'); doc.setFontSize(6.5);
+    doc.setTextColor(136, 136, 136);
+    doc.text('Subtotal', M+155, yR+8, {align:'right'});
+    doc.setFont('helvetica','normal'); doc.setFontSize(10);
+    doc.setTextColor(34, 34, 34);
+    doc.text('$'+totSub.toLocaleString('en-US',{minimumFractionDigits:2}), W-M-1, yR+6, {align:'right'});
+    
+    yR += 8;
+    doc.setFont('helvetica','bold'); doc.setFontSize(9);
+    doc.setTextColor(14, 42, 34);
+    doc.text('IVA 16%', M+155, yR+5, {align:'right'});
+    doc.setFont('helvetica','italic'); doc.setFontSize(6.5);
+    doc.setTextColor(136, 136, 136);
+    doc.text('VAT 16%', M+155, yR+8, {align:'right'});
+    doc.setFont('helvetica','normal'); doc.setFontSize(10);
+    doc.setTextColor(34, 34, 34);
+    doc.text('$'+totIva.toLocaleString('en-US',{minimumFractionDigits:2}), W-M-1, yR+6, {align:'right'});
+    
+    yR += 10;
+    doc.setDrawColor(14, 42, 34);
+    doc.setLineWidth(1.2);
+    doc.line(M+110, yR, W-M, yR);
+    yR += 5;
+    doc.setFont('helvetica','bold'); doc.setFontSize(12);
+    doc.setTextColor(14, 42, 34);
+    doc.text('TOTAL', M+155, yR+3, {align:'right'});
+    doc.setFont('helvetica','italic'); doc.setFontSize(7);
+    doc.setTextColor(184, 144, 88);
+    doc.text('Grand Total', M+155, yR+7, {align:'right'});
+    doc.setFont('helvetica','bold'); doc.setFontSize(14);
+    doc.setTextColor(14, 42, 34);
+    doc.text('$'+totTot.toLocaleString('en-US',{minimumFractionDigits:2}), W-M-1, yR+5, {align:'right'});
+    
+    yR += 14;
+    
+    // ===== SERVICIOS COORDINADOR TOTAL =====
+    if(coordDesc || coordMonto > 0){
+      doc.setFillColor(250, 247, 240);
+      doc.rect(M, yR, W-2*M, 14, 'F');
+      doc.setDrawColor(184, 144, 88);
+      doc.setLineWidth(0.6);
+      doc.line(M, yR, M, yR+14);
+      
+      doc.setFont('helvetica','bold'); doc.setFontSize(9);
+      doc.setTextColor(14, 42, 34);
+      doc.text('SERVICIOS COORDINADOR TOTAL', M+4, yR+5);
+      doc.setFont('helvetica','italic'); doc.setFontSize(7);
+      doc.setTextColor(136, 136, 136);
+      doc.text('Coordinator Services Total', M+4, yR+9);
+      
+      if(coordDesc){
+        doc.setFont('helvetica','normal'); doc.setFontSize(8);
+        doc.setTextColor(85, 85, 85);
+        doc.text(String(coordDesc).substring(0,55), M+85, yR+5);
+      }
+      
+      doc.setFont('helvetica','bold'); doc.setFontSize(13);
+      doc.setTextColor(14, 42, 34);
+      doc.text('$'+coordMonto.toLocaleString('en-US',{minimumFractionDigits:2}), W-M-3, yR+9, {align:'right'});
+      
+      yR += 18;
+    }
+    
+    // ===== OBSERVACIONES =====
+    yR += 4;
+    doc.setFont('helvetica','bold'); doc.setFontSize(10);
+    doc.setTextColor(14, 42, 34);
+    doc.text('OBSERVACIONES', M, yR);
+    doc.setFont('helvetica','italic'); doc.setFontSize(7);
+    doc.setTextColor(136, 136, 136);
+    doc.text('Terms and Conditions', M, yR+4);
+    
+    yR += 8;
+    doc.setFont('helvetica','normal'); doc.setFontSize(8);
+    doc.setTextColor(34, 34, 34);
+    var obsLines = doc.splitTextToSize(obs, W-2*M);
+    doc.text(obsLines, M, yR);
+    yR += obsLines.length * 4 + 3;
+    
+    // Traduccion al ingles
+    var obsEn = 'The total of quoted services must be paid 100% at the moment of confirming the reservation. Any changes in the original request and/or number of guests will result in a renegotiation of this proposal. For transportation, any change in itinerary, destinations outside Guadalajara metropolitan area, and extra hours will be negotiated. Quote subject to availability. All reservations require 50% deposit to block units.';
+    doc.setFont('helvetica','italic'); doc.setFontSize(7);
+    doc.setTextColor(110, 110, 110);
+    var obsEnLines = doc.splitTextToSize(obsEn, W-2*M);
+    doc.text(obsEnLines, M, yR);
+    yR += obsEnLines.length * 3.2 + 6;
+    
+    // ===== FIRMA =====
+    doc.setFont('helvetica','normal'); doc.setFontSize(9);
+    doc.setTextColor(34, 34, 34);
+    doc.text('Atentamente / Sincerely,', M, yR);
+    yR += 10;
+    doc.setFont('helvetica','bold'); doc.setFontSize(10);
+    doc.setTextColor(14, 42, 34);
+    doc.text(contNova, W/2, yR, {align:'center'});
+    doc.setFont('helvetica','italic'); doc.setFontSize(7.5);
+    doc.setTextColor(136, 136, 136);
+    doc.text('Director General . General Manager', W/2, yR+4, {align:'center'});
+    
+    // ===== PIE =====
+    doc.setDrawColor(204, 204, 204);
+    doc.setLineWidth(0.2);
+    doc.line(M, H-12, W-M, H-12);
+    doc.setFont('helvetica','italic'); doc.setFontSize(6.5);
+    doc.setTextColor(130, 130, 130);
+    doc.text('Nova Transports . Guadalajara, Jalisco . Mexico', W/2, H-8, {align:'center'});
+    
+    var nombre = 'Cotizacion_' + (ev.replace(/[^a-zA-Z0-9]/g,'_')) + '_' + Date.now() + '.pdf';
+    doc.save(nombre);
+    
+  } catch(e){
+    alert('Error al generar PDF: ' + e.message);
+    console.error(e);
+  }
+}
+
+// Inicializar con un concepto vacío cuando entras a la sección
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    if(document.getElementById('cot-rows') && document.querySelectorAll('#cot-rows tr').length === 0){
+      cotAgregarConcepto();
+    }
+  }, 800);
+});
+
 </script>
 
 
