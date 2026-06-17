@@ -1092,6 +1092,8 @@ body.dark-mode .ds-card.alt {
           <button class="nfh-btn active" data-h="all" onclick="cambiarHotel('all')"><i class="ti ti-buildings"></i> Todos</button>
           <button class="nfh-btn" data-h="JW Marriott" onclick="cambiarHotel('JW Marriott')"><i class="ti ti-building"></i> JW Marriott</button>
           <button class="nfh-btn" data-h="Residence Inn" onclick="cambiarHotel('Residence Inn')"><i class="ti ti-building"></i> Residence Inn</button>
+          <button class="nfh-btn" data-h="Nova Transports" onclick="cambiarHotel('Nova Transports')"><i class="ti ti-star"></i> Nova Transports</button>
+          <button class="nfh-btn" data-h="Otros" onclick="cambiarHotel('Otros')"><i class="ti ti-dots"></i> Otros</button>
         </div>
         <div id="day-summary"></div>
         <div id="next-svc-bar"></div>
@@ -1370,12 +1372,14 @@ body.dark-mode .ds-card.alt {
 
 
 <div id="pg-users" style="display:none">
-        <div class="th"><h3>Control de Usuarios</h3></div>
-        <div class="ug" id="ugrid"></div>
-      <div style="margin-top:1.5rem">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;color:#1C1C1E;margin-bottom:.8rem">Dispositivos Conectados</div>
-        <div id="devices-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.9rem"></div>
-      </div>
+        <div class="th"><h3>Gestión de Usuarios</h3>
+          <button onclick="abrirNuevoUsuario()" style="background:linear-gradient(135deg,#1B6B4F,#0E4435);color:#fff;border:none;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:600;letter-spacing:.08em;cursor:pointer;text-transform:uppercase"><i class="ti ti-user-plus"></i> Nuevo Usuario</button>
+        </div>
+        <div id="users-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;margin-top:1rem"></div>
+        <div style="margin-top:1.5rem">
+          <div style="font-family:Georgia,serif;font-size:18px;font-weight:400;color:#1C1C1E;margin-bottom:.8rem">Dispositivos Conectados</div>
+          <div id="devices-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.9rem"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1383,6 +1387,68 @@ body.dark-mode .ds-card.alt {
 </div>
 
 <!-- MODALS -->
+<!-- MODAL: Crear/Editar Usuario -->
+<div class="ov" id="ov-user">
+  <div class="modal" style="max-width:520px">
+    <div class="mh"><h2 id="user-mtit">Nuevo Usuario</h2><button class="mc" onclick="cM('ov-user')">x</button></div>
+    <div class="mb">
+      <div class="fsep">Datos del Usuario</div>
+      <div class="r2">
+        <div class="fg"><label class="fl">Nombre Completo *</label><input id="u-name" placeholder="Ej: Carlos Martínez"></div>
+        <div class="fg"><label class="fl">Iniciales *</label><input id="u-ini" placeholder="CM" maxlength="3" style="text-transform:uppercase"></div>
+      </div>
+      <div class="r2">
+        <div class="fg"><label class="fl">Usuario para login *</label><input id="u-username" placeholder="Ej: carlos"></div>
+        <div class="fg"><label class="fl">Contraseña *</label><input id="u-password" placeholder="Contraseña segura"></div>
+      </div>
+      <div class="r2">
+        <div class="fg"><label class="fl">Rol *</label>
+          <select id="u-role">
+            <option value="frontdesk">Front Desk (Recepción)</option>
+            <option value="hoteladmin">Admin de Hotel/Origen</option>
+            <option value="admin">Admin Total Nova</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Origen Asignado *</label>
+          <select id="u-hotel">
+            <option value="JW Marriott">JW Marriott</option>
+            <option value="Residence Inn">Residence Inn</option>
+            <option value="Nova Transports">Nova Transports</option>
+            <option value="Otros">Otros</option>
+            <option value="all">TODOS (solo admin)</option>
+          </select>
+        </div>
+      </div>
+      <div style="background:#FBF2DF;border-left:3px solid #B89058;padding:11px 14px;border-radius:6px;margin-top:.6rem;font-size:11px;color:#6B5A35;line-height:1.6">
+        <b>⚠️ Importante:</b> Si el rol es "Admin Total Nova", el origen debe ser "TODOS". Los demás roles deben tener un origen específico asignado.
+      </div>
+      <div style="display:flex;gap:.7rem;margin-top:1.2rem">
+        <button class="mbt mgh" style="flex:1" onclick="cM('ov-user')">Cancelar</button>
+        <button class="mbt" style="flex:2;background:linear-gradient(135deg,#1B6B4F,#0E4435);color:#fff" onclick="guardarUsuario()">Guardar Usuario</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Confirmar borrado -->
+<div class="ov" id="ov-user-del">
+  <div class="modal" style="max-width:420px">
+    <div class="mh"><h2>Eliminar Usuario</h2><button class="mc" onclick="cM('ov-user-del')">x</button></div>
+    <div class="mb">
+      <div style="text-align:center;padding:1rem 0">
+        <div style="font-size:48px;color:#C13A3A;margin-bottom:.8rem"><i class="ti ti-alert-triangle"></i></div>
+        <div style="font-size:14px;color:#1C1C1E;margin-bottom:.6rem">¿Eliminar a <b id="del-user-name"></b>?</div>
+        <div style="font-size:12px;color:#888">Esta acción NO se puede deshacer.<br>El usuario perderá acceso al sistema.</div>
+      </div>
+      <div style="display:flex;gap:.7rem;margin-top:1rem">
+        <button class="mbt mgh" style="flex:1" onclick="cM('ov-user-del')">Cancelar</button>
+        <button class="mbt" style="flex:1;background:#C13A3A;color:#fff" onclick="confirmarBorradoUsuario()">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Crear/Editar Servicio (original) -->
 <div class="ov" id="ov-svc">
   <div class="modal">
     <div class="mh"><h2 id="mtit">Nuevo Servicio</h2><button class="mc" onclick="cM('ov-svc')">x</button></div>
@@ -1545,7 +1611,7 @@ body.dark-mode .ds-card.alt {
       <div class="r3" style="margin-top:.8rem">
         <div class="fg"><label class="fl">Fecha *</label><input type="date" id="fdt"><div class="fe" id="edt"></div></div>
         <div class="fg"><label class="fl">Hora *</label><input type="text" id="fti" placeholder="00:00" maxlength="5" oninput="fmtTime(this)"><div class="fe" id="eti"></div></div>
-        <div class="fg" id="fhotel-grp" style="display:none"><label class="fl">Hotel</label><select id="fhotel"><option value="JW Marriott">JW Marriott</option><option value="Residence Inn">Residence Inn</option></select></div>
+        <div class="fg" id="fhotel-grp" style="display:none"><label class="fl">Origen del Servicio</label><select id="fhotel"><option value="JW Marriott">JW Marriott</option><option value="Residence Inn">Residence Inn</option><option value="Nova Transports">Nova Transports</option><option value="Otros">Otros</option></select></div>
         <div class="fg"><label class="fl">Vehiculo</label><select id="fve" onchange="autoPrice()"><option>Sedan ejecutivo</option><option>SUV ejecutiva</option><option>Van de lujo</option><option>Sprinter / Transit</option></select></div>
       </div>
       <div class="r2">
@@ -1767,13 +1833,35 @@ firebase.initializeApp({
   appId:"1:950283139818:web:0aef9c973ca6222b377593"
 });
 var db=firebase.firestore();
-var USERS=[
-  {id:'u1',name:'Front Desk JW',username:'JW Marriott',password:'1234',role:'frontdesk',ini:'FD',hotel:'JW Marriott'},
-  {id:'u2',name:'Administrador Nova',username:'Administrador Nova',password:'NovaEjecutiva2026',role:'admin',ini:'AN',hotel:'all'},
-  {id:'u3',name:'Front Desk Residence',username:'Residence Inn',password:'1234',role:'frontdesk',ini:'FR',hotel:'Residence Inn'},
-  {id:'u4',name:'Admin JW',username:'admin JW',password:'jwadmin2026',role:'hoteladmin',ini:'AJ',hotel:'JW Marriott'},
-  {id:'u5',name:'Admin Residence',username:'admin Residence',password:'resadmin2026',role:'hoteladmin',ini:'AR',hotel:'Residence Inn'}
-];
+// Usuario de EMERGENCIA - hardcodeado en código para acceso garantizado
+// Si Firebase falla o la base de datos se borra, este usuario siempre funciona
+var EMERGENCY_USER = {id:'em',name:'Emergencia',username:'emergencia',password:'NovaEmergencia2026',role:'admin',ini:'EM',hotel:'all'};
+
+// USERS empieza solo con el de emergencia; los demás se cargan desde Firebase
+var USERS=[EMERGENCY_USER];
+
+// Carga usuarios desde Firebase y los fusiona con el usuario de emergencia
+function cargarUsuariosFirebase(callback){
+  db.collection('users').get().then(function(snap){
+    var firebaseUsers = [];
+    snap.forEach(function(doc){
+      var u = doc.data();
+      u.id = doc.id;
+      firebaseUsers.push(u);
+    });
+    // El usuario de emergencia siempre primero, después los de Firebase
+    USERS = [EMERGENCY_USER].concat(firebaseUsers);
+    console.log('Usuarios cargados desde Firebase:', firebaseUsers.length);
+    if(callback) callback(true);
+  }).catch(function(err){
+    console.error('Error cargando usuarios:', err);
+    // Si falla Firebase, al menos queda el de emergencia
+    if(callback) callback(false);
+  });
+}
+// Cargar usuarios al iniciar
+cargarUsuariosFirebase();
+
 var SVC=[],CU=null,eId=null,stId=null,cfCb=null,cDid=null,_unsub=null,waId=null;
 var cy=new Date().getFullYear(),cm=new Date().getMonth();
 
@@ -1838,6 +1926,7 @@ function doLogin(){
   document.getElementById('scr-login').classList.remove('on');
   document.getElementById('scr-app').classList.add('on');
   applyRole();updDate();startListen();setInterval(chkAlerts,60000);
+  setTimeout(function(){ try { novaSaludo(); } catch(e){} }, 100);
   registerDevice();
   gp('pg-dash',document.querySelector('.ni'));
 }
@@ -2623,17 +2712,22 @@ function renderDaySummary(){
 function novaSaludo(){
   try {
     var el = document.getElementById('nova-saludo');
-    if (!el) return;
-    var h = new Date().getHours();
-    var saludo = h < 12 ? 'Buenos días' : (h < 19 ? 'Buenas tardes' : 'Buenas noches');
-    var nombre = (window.U && U.role === 'admin') ? 'Santiago' : '';
-    el.textContent = nombre ? saludo + ', ' + nombre : saludo;
-  } catch(e){}
+    if (el) {
+      var h = new Date().getHours();
+      var saludo = h < 12 ? 'Buenos días' : (h < 19 ? 'Buenas tardes' : 'Buenas noches');
+      var nombre = (window.CU && CU.role === 'admin') ? (CU.name || 'Santiago') : '';
+      el.textContent = nombre ? saludo + ', ' + nombre : saludo;
+    }
+  } catch(e){ console.error('novaSaludo error', e); }
   // Mostrar/ocultar filtro de hotel según rol
   try {
     var f = document.getElementById('nova-filtro-hotel');
-    if (f) f.style.display = (CU && CU.role === 'admin') ? 'flex' : 'none';
-  } catch(e){}
+    if (f && window.CU && CU.role === 'admin') {
+      f.style.display = 'flex';
+    } else if (f) {
+      f.style.display = 'none';
+    }
+  } catch(e){ console.error('filtro hotel error', e); }
 }
 
 // Variable global del filtro de hotel del admin
@@ -4322,8 +4416,168 @@ setTimeout(function(){
 },600);
 
 // ============================================================
-// COTIZACIÓN MULTI-CONCEPTO (NOVA)
+// GESTIÓN DE USUARIOS (NOVA)
 // ============================================================
+var USER_EDITING_ID = null;
+var USER_DELETING_ID = null;
+
+// Renderiza la lista de usuarios en el panel
+function renderUsers(){
+  var cont = document.getElementById('users-list');
+  if(!cont) return;
+  cont.innerHTML = '';
+  USERS.forEach(function(u){
+    var card = document.createElement('div');
+    var roleColor = u.role === 'admin' ? '#B89058' : (u.role === 'hoteladmin' ? '#1B6B4F' : '#5F5E5A');
+    var roleLabel = u.role === 'admin' ? 'ADMIN TOTAL' : (u.role === 'hoteladmin' ? 'ADMIN DE ORIGEN' : 'FRONT DESK');
+    var isEmergency = u.id === 'em';
+    var canDelete = !isEmergency && (window.CU && CU.role === 'admin');
+    card.style.cssText = 'background:#fff;border:1px solid #EDE8DC;border-left:3px solid ' + roleColor + ';border-radius:10px;padding:1rem;box-shadow:0 2px 8px rgba(0,0,0,.04)';
+    card.innerHTML =
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">' +
+        '<div style="width:38px;height:38px;border-radius:50%;background:#FAF7F0;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:13px;color:' + roleColor + ';font-weight:600">' + (u.ini || '?') + '</div>' +
+        '<div style="flex:1">' +
+          '<div style="font-size:14px;font-weight:500;color:#1C1C1E">' + (u.name || 'Sin nombre') + (isEmergency ? ' 🛡️' : '') + '</div>' +
+          '<div style="font-size:10px;color:' + roleColor + ';letter-spacing:.08em;font-weight:500;margin-top:2px">' + roleLabel + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="border-top:1px solid #F0EDE6;padding-top:8px;font-size:12px;color:#6B6F62;line-height:1.7">' +
+        '<div><b style="color:#888">Usuario:</b> <span style="font-family:monospace;color:#1C1C1E">' + (u.username || '') + '</span></div>' +
+        '<div><b style="color:#888">Origen:</b> ' + (u.hotel === 'all' ? '<span style="color:#B89058">TODOS</span>' : (u.hotel || '-')) + '</div>' +
+      '</div>' +
+      (isEmergency ?
+        '<div style="margin-top:10px;font-size:10px;color:#888;font-style:italic;text-align:center;padding:6px;background:#FAF7F0;border-radius:4px">Usuario de emergencia (no editable)</div>' :
+        '<div style="display:flex;gap:6px;margin-top:10px">' +
+          '<button onclick="abrirEditarUsuario(\'' + u.id + '\')" style="flex:1;padding:7px;background:#fff;border:1px solid #EDE8DC;color:#0E4435;font-size:11px;border-radius:6px;cursor:pointer;font-weight:500"><i class="ti ti-edit"></i> Editar</button>' +
+          (canDelete ? '<button onclick="abrirBorrarUsuario(\'' + u.id + '\')" style="padding:7px 11px;background:#fff;border:1px solid #F8D7DA;color:#C13A3A;font-size:11px;border-radius:6px;cursor:pointer"><i class="ti ti-trash"></i></button>' : '') +
+        '</div>'
+      );
+    cont.appendChild(card);
+  });
+}
+
+function abrirNuevoUsuario(){
+  USER_EDITING_ID = null;
+  document.getElementById('user-mtit').textContent = 'Nuevo Usuario';
+  document.getElementById('u-name').value = '';
+  document.getElementById('u-ini').value = '';
+  document.getElementById('u-username').value = '';
+  document.getElementById('u-password').value = '';
+  document.getElementById('u-role').value = 'frontdesk';
+  document.getElementById('u-hotel').value = 'JW Marriott';
+  oM('ov-user');
+}
+
+function abrirEditarUsuario(id){
+  var u = USERS.find(function(x){return x.id === id;});
+  if(!u) return;
+  USER_EDITING_ID = id;
+  document.getElementById('user-mtit').textContent = 'Editar Usuario';
+  document.getElementById('u-name').value = u.name || '';
+  document.getElementById('u-ini').value = u.ini || '';
+  document.getElementById('u-username').value = u.username || '';
+  document.getElementById('u-password').value = u.password || '';
+  document.getElementById('u-role').value = u.role || 'frontdesk';
+  document.getElementById('u-hotel').value = u.hotel || 'JW Marriott';
+  oM('ov-user');
+}
+
+function abrirBorrarUsuario(id){
+  var u = USERS.find(function(x){return x.id === id;});
+  if(!u) return;
+  USER_DELETING_ID = id;
+  document.getElementById('del-user-name').textContent = u.name || u.username;
+  oM('ov-user-del');
+}
+
+function guardarUsuario(){
+  var name = document.getElementById('u-name').value.trim();
+  var ini = document.getElementById('u-ini').value.trim().toUpperCase();
+  var username = document.getElementById('u-username').value.trim();
+  var password = document.getElementById('u-password').value;
+  var role = document.getElementById('u-role').value;
+  var hotel = document.getElementById('u-hotel').value;
+
+  // Validaciones
+  if(!name || !username || !password || !ini){
+    alert('Por favor llena todos los campos obligatorios');
+    return;
+  }
+  if(password.length < 4){
+    alert('La contraseña debe tener al menos 4 caracteres');
+    return;
+  }
+  // Verificar username no duplicado
+  var existing = USERS.find(function(u){
+    return u.username.toLowerCase() === username.toLowerCase() && u.id !== USER_EDITING_ID && u.id !== 'em';
+  });
+  if(existing){
+    alert('Ya existe un usuario con ese nombre de usuario. Elige otro.');
+    return;
+  }
+  // Reglas de rol/origen
+  if(role === 'admin' && hotel !== 'all'){
+    if(!confirm('Los admin totales normalmente tienen origen "TODOS". ¿Estás seguro de asignar un origen específico?')) return;
+  }
+  if(role !== 'admin' && hotel === 'all'){
+    alert('Solo los Admin Total pueden tener origen "TODOS". Asigna un origen específico.');
+    return;
+  }
+
+  var userData = {
+    name: name,
+    ini: ini,
+    username: username,
+    password: password,
+    role: role,
+    hotel: hotel
+  };
+
+  if(USER_EDITING_ID){
+    // Editar existente
+    db.collection('users').doc(USER_EDITING_ID).update(userData).then(function(){
+      toast('Usuario actualizado', 'ok');
+      cM('ov-user');
+      cargarUsuariosFirebase(function(){ renderUsers(); });
+    }).catch(function(e){
+      toast('Error: ' + e.message, 'err');
+    });
+  } else {
+    // Crear nuevo
+    db.collection('users').add(userData).then(function(){
+      toast('Usuario creado', 'ok');
+      cM('ov-user');
+      cargarUsuariosFirebase(function(){ renderUsers(); });
+    }).catch(function(e){
+      toast('Error: ' + e.message, 'err');
+    });
+  }
+}
+
+function confirmarBorradoUsuario(){
+  if(!USER_DELETING_ID) return;
+  db.collection('users').doc(USER_DELETING_ID).delete().then(function(){
+    toast('Usuario eliminado', 'ok');
+    cM('ov-user-del');
+    USER_DELETING_ID = null;
+    cargarUsuariosFirebase(function(){ renderUsers(); });
+  }).catch(function(e){
+    toast('Error: ' + e.message, 'err');
+  });
+}
+
+// Llamar renderUsers cuando se entra a la página de usuarios
+var _oldGp = window.gp;
+if(_oldGp){
+  window.gp = function(pid, el){
+    _oldGp(pid, el);
+    if(pid === 'pg-users'){
+      setTimeout(function(){ renderUsers(); }, 100);
+    }
+  };
+}
+
+
 var COT_ROWS = 0;
 
 function cotAgregarConcepto(){
