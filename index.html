@@ -1137,6 +1137,7 @@ body.dark-mode .ds-card.alt {
         </div>
         <div id="svcs-cont-normal">
           <div class="tw"><div class="tsx"><table><thead><tr>
+            <th id="th-check" style="display:none;width:30px;text-align:center"><input type="checkbox" id="chk-all-svc" onchange="toggleSeleccionarTodos(this.checked)" title="Seleccionar todos" style="transform:scale(1.1);accent-color:#C13A3A;cursor:pointer"></th>
             <th>Fecha</th><th>Hora</th><th>Cliente</th><th class="col-hide">Teléfono</th><th class="col-hide">Pas.</th><th class="col-hide">Vuelo</th><th>Origen</th><th>Destino</th><th>Vehículo</th><th>Vendedor</th><th id="thcs" style="display:none">Costo</th><th>Estado</th><th>Acciones</th>
           </tr></thead><tbody id="sb2"></tbody></table></div><div class="mobile-table-wrap" id="sb2-mobile"></div></div>
         </div>
@@ -2009,6 +2010,9 @@ function applyRole(){
   // Botón "Ver Duplicados" — solo admin total
   var btnDupes = document.getElementById('btn-vista-dupes');
   if(btnDupes) btnDupes.style.display = Afull ? 'inline-flex' : 'none';
+  // Columna de checkbox para borrado múltiple — admin y hoteladmin
+  var thCheck = document.getElementById('th-check');
+  if(thCheck) thCheck.style.display = A ? '' : 'none';
   // Hide lock button - no longer needed
   var lockBtn=document.getElementById('btn-cost-lock');
   if(lockBtn)lockBtn.style.display='none';
@@ -3203,9 +3207,14 @@ function rt(ctx){
   var D=ctx==='d',C=cc(),A=CU&&(CU.role==='admin'||CU.role==='hoteladmin');
   var l=getL(ctx),tb=document.getElementById(D?'db':'sb2');
   if(!l.length){
-    var cols=(D?11:12)+(C?1:0);
+    var cols=(D?11:12)+(C?1:0)+(!D&&A?1:0);
     tb.innerHTML='<tr><td colspan="'+cols+'"><div class="empty"><i class="ti ti-car-off"></i><p>No hay servicios</p></div></td></tr>';
     return;
+  }
+  // Resetear selección al recargar la tabla
+  if(!D && A){
+    __SELECTED_SVC_IDS = {};
+    actualizarBarraSeleccion();
   }
   var lastDate='';
   var mbId=D?'db-mobile':'sb2-mobile';
@@ -3214,8 +3223,10 @@ function rt(ctx){
     if(!l.length){mbEl.innerHTML='<div class="empty"><i class="ti ti-car-off"></i><p>No hay servicios</p></div>';}
     else{mbEl.innerHTML=l.map(function(s){
       var id=s.id;
+      var mobChk = (!D && A) ? '<input type="checkbox" class="svc-chk-mobile" data-id="'+id+'" onchange="toggleSeleccion(\''+id+'\',this.checked)" style="margin-right:6px;transform:scale(1.2);accent-color:#C13A3A">' : '';
       return '<div class="mobile-row">'+
         '<div class="mobile-row-top">'+
+          mobChk +
           '<span class="mobile-row-time">'+(s.time||'--')+'</span>'+
           '<span class="mobile-row-name">'+fv(s.name)+'</span>'+
           '<span class="badge '+sc(s.status)+'">'+s.status+'</span>'+
@@ -3238,11 +3249,12 @@ function rt(ctx){
     var dr=s.driver?s.driver:'<span style="color:#8B2020;font-weight:600;font-size:11px">⚠ Sin chofer</span>';
     var daySep='';
     if(!D&&s.date!==lastDate&&lastDate!==''){
-      daySep='<tr><td colspan="'+(C?13:12)+'" style="padding:0;background:#F5F2EC"><div style="height:1px;background:linear-gradient(90deg,transparent,#1B6B4F,transparent);margin:2px 0"></div></td></tr>';
+      daySep='<tr><td colspan="'+((C?13:12)+(!D&&A?1:0))+'" style="padding:0;background:#F5F2EC"><div style="height:1px;background:linear-gradient(90deg,transparent,#1B6B4F,transparent);margin:2px 0"></div></td></tr>';
     }
     lastDate=s.date;
     var id=s.id;
-    return daySep+'<tr>'+dt+
+    var chkCell = (!D && A) ? '<td style="width:30px;text-align:center"><input type="checkbox" class="svc-chk" data-id="'+id+'" onchange="toggleSeleccion(\''+id+'\',this.checked)" style="transform:scale(1.1);accent-color:#C13A3A;cursor:pointer"></td>' : '';
+    return daySep+'<tr>'+chkCell+dt+
       '<td class="tt2">'+(s.time||'--')+'</td>'+
       '<td class="tn">'+fv(s.name)+'</td>'+
       '<td class="t2 col-hide">'+fv(s.phone)+'</td>'+
@@ -3564,6 +3576,127 @@ function borrarTodosLosDuplicados(){
 
 // Toggle entre vista normal de servicios y vista de duplicados
 var __VISTA_DUPLICADOS = false;
+
+// ============================================================
+// SELECCIÓN MÚLTIPLE Y BORRADO MASIVO
+// (solo admin y hoteladmin pueden usar esto)
+// ============================================================
+var __SELECTED_SVC_IDS = {};
+
+// Toggle un servicio en la selección
+function toggleSeleccion(id, checked){
+  if(checked){
+    __SELECTED_SVC_IDS[id] = true;
+  } else {
+    delete __SELECTED_SVC_IDS[id];
+    var chkAll = document.getElementById('chk-all-svc');
+    if(chkAll) chkAll.checked = false;
+  }
+  actualizarBarraSeleccion();
+}
+
+// Seleccionar/deseleccionar TODOS los visibles
+function toggleSeleccionarTodos(checked){
+  var checkboxes = document.querySelectorAll('.svc-chk');
+  checkboxes.forEach(function(chk){
+    chk.checked = checked;
+    var id = chk.getAttribute('data-id');
+    if(checked){
+      __SELECTED_SVC_IDS[id] = true;
+    } else {
+      delete __SELECTED_SVC_IDS[id];
+    }
+  });
+  var mobChks = document.querySelectorAll('.svc-chk-mobile');
+  mobChks.forEach(function(chk){ chk.checked = checked; });
+  actualizarBarraSeleccion();
+}
+
+// Deseleccionar todo
+function deseleccionarTodos(){
+  __SELECTED_SVC_IDS = {};
+  document.querySelectorAll('.svc-chk, .svc-chk-mobile').forEach(function(chk){
+    chk.checked = false;
+  });
+  var chkAll = document.getElementById('chk-all-svc');
+  if(chkAll) chkAll.checked = false;
+  actualizarBarraSeleccion();
+}
+
+// Actualiza la barra flotante según cuántos están seleccionados
+function actualizarBarraSeleccion(){
+  var bar = document.getElementById('bulk-action-bar');
+  var count = Object.keys(__SELECTED_SVC_IDS).length;
+  if(!bar) return;
+  if(count === 0){
+    bar.style.display = 'none';
+  } else {
+    bar.style.display = 'flex';
+    document.getElementById('bulk-count').textContent = count;
+    document.getElementById('bulk-count-text').textContent = count + ' servicio' + (count===1?'':'s');
+  }
+}
+
+// Confirmar y ejecutar borrado múltiple (TRIPLE confirmación por seguridad)
+function confirmarBorradoMultiple(){
+  var ids = Object.keys(__SELECTED_SVC_IDS);
+  var count = ids.length;
+  if(count === 0){
+    toast('No hay servicios seleccionados','err');
+    return;
+  }
+  // Calcular monto total a borrar
+  var montoTotal = 0;
+  for(var i=0; i<ids.length; i++){
+    var s = null;
+    for(var j=0; j<SVC.length; j++){
+      if(SVC[j].id === ids[i]){ s = SVC[j]; break; }
+    }
+    if(s && s.cost) montoTotal += parseFloat(s.cost) || 0;
+  }
+  
+  // PRIMERA confirmación
+  var msg1 = '⚠️ ELIMINACIÓN MÚLTIPLE\n\n';
+  msg1 += 'Vas a borrar ' + count + ' servicio' + (count===1?'':'s') + '.\n';
+  msg1 += 'Monto total: $' + montoTotal.toLocaleString('es-MX') + ' MXN\n\n';
+  msg1 += 'Esta acción NO se puede deshacer.\n';
+  msg1 += '¿Continuar?';
+  if(!confirm(msg1)) return;
+  
+  // SEGUNDA confirmación
+  var msg2 = '⚠️ ÚLTIMA CONFIRMACIÓN\n\n';
+  msg2 += 'Se eliminarán ' + count + ' servicios PERMANENTEMENTE de Firebase.\n\n';
+  msg2 += 'Si tienes dudas, exporta el Excel primero.\n\n';
+  msg2 += '¿Estás 100% seguro?';
+  if(!confirm(msg2)) return;
+  
+  // TERCERA confirmación: escribir BORRAR
+  var typed = prompt('Para confirmar, escribe la palabra:\n\nBORRAR\n\n(en mayúsculas, exacto)');
+  if(typed !== 'BORRAR'){
+    toast('Eliminación cancelada','err');
+    return;
+  }
+  
+  // Ejecutar borrado
+  toast('Eliminando ' + count + ' servicios...','ok');
+  var borrados = 0, errores = 0;
+  var promesas = ids.map(function(id){
+    return db.collection('services').doc(id).delete().then(function(){
+      borrados++;
+    }).catch(function(){
+      errores++;
+    });
+  });
+  
+  Promise.all(promesas).then(function(){
+    toast('✓ ' + borrados + ' borrados' + (errores ? ' · ' + errores + ' con error' : ''), 'ok');
+    __SELECTED_SVC_IDS = {};
+    actualizarBarraSeleccion();
+    var chkAll = document.getElementById('chk-all-svc');
+    if(chkAll) chkAll.checked = false;
+  });
+}
+
 function toggleVistaDuplicados(){
   __VISTA_DUPLICADOS = !__VISTA_DUPLICADOS;
   var btn = document.getElementById('btn-vista-dupes');
@@ -5203,6 +5336,17 @@ window.addEventListener('load', function(){
 </script>
 
 
+
+<!-- BARRA FLOTANTE de acciones para selección múltiple -->
+<div id="bulk-action-bar" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1A1A;color:#fff;padding:14px 24px;border-radius:50px;box-shadow:0 8px 32px rgba(0,0,0,0.3);z-index:9998;display:none;align-items:center;gap:16px;font-family:Inter,sans-serif">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="background:#C13A3A;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px" id="bulk-count">0</div>
+    <span style="font-size:13px;color:#F4F6F5"><b id="bulk-count-text">0 servicios</b> seleccionados</span>
+  </div>
+  <div style="width:1px;height:24px;background:#3A3A3A"></div>
+  <button onclick="deseleccionarTodos()" style="padding:8px 14px;background:transparent;color:#9BA5A0;border:1px solid #3A3A3A;border-radius:6px;font-size:12px;cursor:pointer">Deseleccionar</button>
+  <button onclick="confirmarBorradoMultiple()" style="padding:8px 18px;background:#C13A3A;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;letter-spacing:.06em;cursor:pointer;text-transform:uppercase;display:flex;align-items:center;gap:6px"><i class="ti ti-trash"></i> Eliminar seleccionados</button>
+</div>
 
 </body>
 </html>
