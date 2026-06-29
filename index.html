@@ -1121,6 +1121,7 @@ body.dark-mode .ds-card.alt {
 
       <div id="pg-svcs" style="display:none">
         <div class="th"><h3>Todos los Servicios</h3>
+          <button id="btn-vista-dupes" class="filt-toggle" onclick="toggleVistaDuplicados()" style="display:none"><i class="ti ti-copy"></i> Ver Duplicados</button>
           <button class="filt-toggle" onclick="document.querySelector('#pg-svcs .filt').classList.toggle('open');this.classList.toggle('active')"><i class="ti ti-adjustments-horizontal"></i> Filtrar</button>
           <div class="filt">
             <input class="fi" id="sq" placeholder="Buscar cliente, vuelo, origen..." oninput="rt('s')">
@@ -1134,9 +1135,18 @@ body.dark-mode .ds-card.alt {
             <select class="fs" id="sv2" onchange="rt('s')" style="width:140px"><option value="">Todos los vendedores</option></select>
           </div>
         </div>
-        <div class="tw"><div class="tsx"><table><thead><tr>
-          <th>Fecha</th><th>Hora</th><th>Cliente</th><th class="col-hide">Teléfono</th><th class="col-hide">Pas.</th><th class="col-hide">Vuelo</th><th>Origen</th><th>Destino</th><th>Vehículo</th><th>Vendedor</th><th id="thcs" style="display:none">Costo</th><th>Estado</th><th>Acciones</th>
-        </tr></thead><tbody id="sb2"></tbody></table></div><div class="mobile-table-wrap" id="sb2-mobile"></div></div>
+        <div id="svcs-cont-normal">
+          <div class="tw"><div class="tsx"><table><thead><tr>
+            <th>Fecha</th><th>Hora</th><th>Cliente</th><th class="col-hide">Teléfono</th><th class="col-hide">Pas.</th><th class="col-hide">Vuelo</th><th>Origen</th><th>Destino</th><th>Vehículo</th><th>Vendedor</th><th id="thcs" style="display:none">Costo</th><th>Estado</th><th>Acciones</th>
+          </tr></thead><tbody id="sb2"></tbody></table></div><div class="mobile-table-wrap" id="sb2-mobile"></div></div>
+        </div>
+        <div id="svcs-cont-dupes" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.7rem">
+            <div style="font-family:Georgia,serif;font-size:18px;color:#1C1C1E"><i class="ti ti-copy" style="color:#C13A3A;margin-right:6px"></i>Servicios Duplicados Detectados</div>
+            <button id="dup-btn-limpiar" onclick="borrarTodosLosDuplicados()" style="display:none;padding:9px 16px;background:#C13A3A;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;letter-spacing:.06em;cursor:pointer;text-transform:uppercase"><i class="ti ti-broom"></i> Limpiar todos los duplicados</button>
+          </div>
+          <div id="dup-list"></div>
+        </div>
       </div>
 
       <div id="pg-cal" style="display:none">
@@ -1387,6 +1397,39 @@ body.dark-mode .ds-card.alt {
 </div>
 
 <!-- MODALS -->
+<!-- MODAL: Duplicado detectado al crear servicio -->
+<div class="ov" id="ov-duplicado">
+  <div class="modal" style="max-width:480px">
+    <div class="mh"><h2 style="color:#C13A3A"><i class="ti ti-alert-triangle"></i> Servicio Duplicado Detectado</h2><button class="mc" onclick="cancelarDuplicado()">x</button></div>
+    <div class="mb">
+      <div style="background:#FBF2DF;border-left:3px solid #B89058;padding:12px 16px;border-radius:6px;margin-bottom:1rem;font-size:12px;color:#6B5A35;line-height:1.6">
+        Ya existe un servicio con el mismo <b>cliente</b>, <b>fecha</b> y <b>hora</b>. Por favor revisa antes de continuar.
+      </div>
+      
+      <div style="background:#FAF7F0;border:1px solid #EDE8DC;border-radius:8px;padding:14px 16px;margin-bottom:1rem">
+        <div style="font-size:10px;color:#8B8478;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:600">Servicio existente</div>
+        <div style="display:grid;grid-template-columns:90px 1fr;gap:6px 12px;font-size:13px;line-height:1.5">
+          <div style="color:#8B8478">Cliente:</div><div style="color:#1C1C1E;font-weight:500" id="dup-existente-nombre">-</div>
+          <div style="color:#8B8478">Fecha/Hora:</div><div style="color:#1C1C1E" id="dup-existente-fecha">-</div>
+          <div style="color:#8B8478">Trayecto:</div><div style="color:#1C1C1E" id="dup-existente-trayecto">-</div>
+          <div style="color:#8B8478">Monto:</div><div style="color:#1C1C1E" id="dup-existente-monto">-</div>
+          <div style="color:#8B8478">Creado por:</div><div style="color:#1C1C1E" id="dup-existente-creado">-</div>
+        </div>
+      </div>
+      
+      <div style="font-size:13px;color:#1C1C1E;margin-bottom:1rem;line-height:1.6">
+        <b>¿Es realmente otro servicio?</b><br>
+        <span style="color:#6B6F62;font-size:12px">Ej: misma persona pero ida/vuelta el mismo día, o servicio cancelado y reprogramado.</span>
+      </div>
+      
+      <div style="display:flex;gap:.7rem">
+        <button class="mbt mgh" style="flex:1" onclick="cancelarDuplicado()">Cancelar creación</button>
+        <button class="mbt" style="flex:1.4;background:linear-gradient(135deg,#B89058,#8B6A3F);color:#fff" onclick="confirmarCrearAunqueDuplicado()">Sí, es otro servicio</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: Crear/Editar Usuario -->
 <div class="ov" id="ov-user">
   <div class="modal" style="max-width:520px">
@@ -1963,6 +2006,9 @@ function applyRole(){
   document.getElementById('thcs').style.display=C?'':'none';
   // Excel - both can export but frontdesk won't see costs in it
   document.getElementById('btn-xls').style.display=C?'':'none';
+  // Botón "Ver Duplicados" — solo admin total
+  var btnDupes = document.getElementById('btn-vista-dupes');
+  if(btnDupes) btnDupes.style.display = Afull ? 'inline-flex' : 'none';
   // Hide lock button - no longer needed
   var lockBtn=document.getElementById('btn-cost-lock');
   if(lockBtn)lockBtn.style.display='none';
@@ -3313,6 +3359,22 @@ function saveSvc(){
     var hSel = document.getElementById('fhotel');
     if(hSel) data.hotel = hSel.value;
   }
+  
+  // ============================================================
+  // VERIFICACIÓN DE DUPLICADOS (solo al CREAR, no al editar)
+  // Lógica B: Inteligente — cliente + fecha + hora coinciden
+  // ============================================================
+  if(!eId && !window.__FORCE_SAVE_DUP){
+    var dupe = encontrarDuplicado(nm, dt, ti);
+    if(dupe){
+      // Guardar los datos temporalmente para usarlos si confirman
+      window.__PENDING_SVC_DATA = data;
+      mostrarModalDuplicado(dupe);
+      return; // Detener el guardado hasta que confirme
+    }
+  }
+  window.__FORCE_SAVE_DUP = false; // Reset
+  
   if(eId){
     var prev=null;for(var i=0;i<SVC.length;i++){if(SVC[i].id===eId){prev=SVC[i];break;}}
     var hist=(prev&&prev.history)?prev.history.slice():[];
@@ -3334,6 +3396,193 @@ function saveSvc(){
 }
 
 function opSt(id){stId=id;oM('ov-st');}
+
+// ============================================================
+// SISTEMA DE DETECCIÓN Y MANEJO DE DUPLICADOS
+// Lógica B: cliente + fecha + hora (case-insensitive)
+// ============================================================
+
+// Normaliza texto para comparación: minúsculas, sin acentos, sin espacios extra
+function normalizarTexto(s){
+  if(!s) return '';
+  return s.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().replace(/\s+/g,' ');
+}
+
+// Busca si existe un servicio duplicado (devuelve el primero encontrado o null)
+function encontrarDuplicado(nombre, fecha, hora, excluirId){
+  if(!nombre || !fecha || !hora) return null;
+  var nNorm = normalizarTexto(nombre);
+  for(var i=0; i<SVC.length; i++){
+    var s = SVC[i];
+    if(excluirId && s.id === excluirId) continue;
+    if(normalizarTexto(s.name) === nNorm && s.date === fecha && s.time === hora){
+      return s;
+    }
+  }
+  return null;
+}
+
+// Detecta TODOS los grupos de duplicados en SVC
+// Devuelve array de grupos: [[svc1, svc2], [svc3, svc4, svc5], ...]
+function detectarTodosDuplicados(){
+  var grupos = {};
+  for(var i=0; i<SVC.length; i++){
+    var s = SVC[i];
+    if(!s.name || !s.date || !s.time) continue;
+    var key = normalizarTexto(s.name) + '||' + s.date + '||' + s.time;
+    if(!grupos[key]) grupos[key] = [];
+    grupos[key].push(s);
+  }
+  // Filtrar solo grupos con 2+ servicios
+  var resultado = [];
+  for(var k in grupos){
+    if(grupos[k].length >= 2){
+      // Ordenar por createdAt (más viejo primero)
+      grupos[k].sort(function(a,b){
+        var ta = a.createdAt || '';
+        var tb = b.createdAt || '';
+        return ta.localeCompare(tb);
+      });
+      resultado.push(grupos[k]);
+    }
+  }
+  return resultado;
+}
+
+// Muestra modal cuando se detecta duplicado al crear
+function mostrarModalDuplicado(svcExistente){
+  document.getElementById('dup-existente-nombre').textContent = svcExistente.name || '-';
+  document.getElementById('dup-existente-fecha').textContent = (svcExistente.date || '-') + ' · ' + (svcExistente.time || '-');
+  document.getElementById('dup-existente-trayecto').textContent = (svcExistente.origin || '-') + ' → ' + (svcExistente.dest || '-');
+  document.getElementById('dup-existente-creado').textContent = svcExistente.createdBy || 'Desconocido';
+  document.getElementById('dup-existente-monto').textContent = svcExistente.cost ? '$' + svcExistente.cost.toLocaleString('es-MX') : '-';
+  oM('ov-duplicado');
+}
+
+// Si el usuario confirma que quiere crear el servicio aunque haya duplicado
+function confirmarCrearAunqueDuplicado(){
+  cM('ov-duplicado');
+  window.__FORCE_SAVE_DUP = true;
+  saveSvc(); // Reintentar guardado forzado
+}
+
+// Cancela la creación del duplicado
+function cancelarDuplicado(){
+  cM('ov-duplicado');
+  window.__PENDING_SVC_DATA = null;
+}
+
+// Renderiza la sección de duplicados detectados en la página de Servicios
+function renderDuplicados(){
+  var cont = document.getElementById('dup-list');
+  if(!cont) return;
+  var grupos = detectarTodosDuplicados();
+  if(grupos.length === 0){
+    cont.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:#8B8478"><i class="ti ti-circle-check" style="font-size:48px;color:#34D399;display:block;margin-bottom:.8rem"></i><div style="font-family:Georgia,serif;font-size:18px;color:#1C1C1E;margin-bottom:.4rem">Sin duplicados</div><div style="font-size:13px">No se detectaron servicios repetidos en el sistema</div></div>';
+    document.getElementById('dup-btn-limpiar').style.display = 'none';
+    return;
+  }
+  document.getElementById('dup-btn-limpiar').style.display = 'inline-flex';
+  var totalDupes = 0;
+  grupos.forEach(function(g){ totalDupes += g.length - 1; }); // -1 porque uno se queda
+  
+  var html = '<div style="background:#FBF2DF;border-left:3px solid #B89058;padding:14px 18px;border-radius:6px;margin-bottom:1.2rem;font-size:13px;color:#6B5A35;line-height:1.6">';
+  html += '<b>Se detectaron ' + grupos.length + ' grupo' + (grupos.length===1?'':'s') + ' de duplicados</b> · ' + totalDupes + ' servicio' + (totalDupes===1?'':'s') + ' podrían eliminarse';
+  html += '</div>';
+  
+  grupos.forEach(function(grupo, idx){
+    html += '<div style="background:#fff;border:1px solid #EDE8DC;border-left:3px solid #C13A3A;border-radius:8px;padding:1rem;margin-bottom:.8rem">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem"><div style="font-family:Georgia,serif;font-size:15px;color:#1C1C1E"><b>' + (grupo[0].name||'Sin nombre') + '</b> <span style="color:#8B8478">·</span> <span style="color:#0E4435">' + (grupo[0].date||'') + ' a las ' + (grupo[0].time||'') + '</span></div><div style="font-size:11px;color:#C13A3A;font-weight:600">' + grupo.length + ' COPIAS</div></div>';
+    html += '<table style="width:100%;font-size:12px;border-collapse:collapse"><tr style="color:#8B8478;font-size:10px;text-transform:uppercase;letter-spacing:.08em"><th style="text-align:left;padding:6px 0;border-bottom:1px solid #EDE8DC">Estatus</th><th style="text-align:left;padding:6px 0;border-bottom:1px solid #EDE8DC">Trayecto</th><th style="text-align:left;padding:6px 0;border-bottom:1px solid #EDE8DC">Monto</th><th style="text-align:left;padding:6px 0;border-bottom:1px solid #EDE8DC">Creado por</th><th style="text-align:right;padding:6px 0;border-bottom:1px solid #EDE8DC">Acción</th></tr>';
+    grupo.forEach(function(s, i){
+      var esViejo = i === 0;
+      html += '<tr>';
+      html += '<td style="padding:8px 0;color:' + (esViejo ? '#0E4435' : '#888') + ';font-weight:' + (esViejo ? '600' : '400') + '">' + (esViejo ? '✓ MANTENER (más viejo)' : '✗ Duplicado') + '</td>';
+      html += '<td style="padding:8px 0;color:#1C1C1E">' + (s.origin || '-') + ' → ' + (s.dest || '-') + '</td>';
+      html += '<td style="padding:8px 0;color:#1C1C1E">' + (s.cost ? '$' + s.cost.toLocaleString('es-MX') : '-') + '</td>';
+      html += '<td style="padding:8px 0;color:#6B6F62;font-size:11px">' + (s.createdBy || '-') + '</td>';
+      html += '<td style="padding:8px 0;text-align:right">' + (esViejo ? '<span style="color:#8B8478;font-size:11px;font-style:italic">se conserva</span>' : '<button onclick="borrarDuplicadoIndividual(\'' + s.id + '\')" style="padding:5px 10px;background:#fff;border:1px solid #F8D7DA;color:#C13A3A;font-size:11px;border-radius:5px;cursor:pointer">Borrar este</button>') + '</td>';
+      html += '</tr>';
+    });
+    html += '</table></div>';
+  });
+  cont.innerHTML = html;
+}
+
+// Borra un duplicado individual
+function borrarDuplicadoIndividual(id){
+  if(!confirm('¿Borrar este servicio duplicado?\n\nEsta acción NO se puede deshacer.')) return;
+  db.collection('services').doc(id).delete().then(function(){
+    toast('Duplicado eliminado','ok');
+    setTimeout(renderDuplicados, 500);
+  }).catch(function(e){
+    toast('Error: ' + e.message,'err');
+  });
+}
+
+// Borra TODOS los duplicados (mantiene el más viejo de cada grupo)
+function borrarTodosLosDuplicados(){
+  var grupos = detectarTodosDuplicados();
+  if(grupos.length === 0){
+    toast('No hay duplicados que limpiar','ok');
+    return;
+  }
+  var totalABorrar = 0;
+  var idsBorrar = [];
+  grupos.forEach(function(g){
+    // Saltar el primero (el más viejo), borrar el resto
+    for(var i=1; i<g.length; i++){
+      idsBorrar.push(g[i].id);
+      totalABorrar++;
+    }
+  });
+  
+  // Doble confirmación
+  if(!confirm('⚠️ ATENCIÓN — Vas a eliminar ' + totalABorrar + ' servicios duplicados.\n\nEl sistema mantendrá el más viejo de cada grupo.\n\nEsta acción NO se puede deshacer.\n\n¿Continuar?')) return;
+  if(!confirm('Última confirmación.\n\nSe borrarán ' + totalABorrar + ' servicios PERMANENTEMENTE.\n\n¿Estás 100% seguro?')) return;
+  
+  // Borrar en cascada
+  document.getElementById('dup-btn-limpiar').disabled = true;
+  document.getElementById('dup-btn-limpiar').textContent = 'Borrando...';
+  
+  var borrados = 0, errores = 0;
+  var promesas = idsBorrar.map(function(id){
+    return db.collection('services').doc(id).delete().then(function(){
+      borrados++;
+    }).catch(function(){
+      errores++;
+    });
+  });
+  
+  Promise.all(promesas).then(function(){
+    toast('Limpieza completa: ' + borrados + ' borrados' + (errores ? ', ' + errores + ' con error' : ''),'ok');
+    document.getElementById('dup-btn-limpiar').disabled = false;
+    document.getElementById('dup-btn-limpiar').innerHTML = '<i class="ti ti-broom"></i> Limpiar todos los duplicados';
+    setTimeout(renderDuplicados, 800);
+  });
+}
+
+// Toggle entre vista normal de servicios y vista de duplicados
+var __VISTA_DUPLICADOS = false;
+function toggleVistaDuplicados(){
+  __VISTA_DUPLICADOS = !__VISTA_DUPLICADOS;
+  var btn = document.getElementById('btn-vista-dupes');
+  var contNormal = document.getElementById('svcs-cont-normal');
+  var contDupes = document.getElementById('svcs-cont-dupes');
+  if(__VISTA_DUPLICADOS){
+    btn.classList.add('active');
+    btn.innerHTML = '<i class="ti ti-list"></i> Ver Todos los Servicios';
+    if(contNormal) contNormal.style.display = 'none';
+    if(contDupes) contDupes.style.display = 'block';
+    renderDuplicados();
+  } else {
+    btn.classList.remove('active');
+    btn.innerHTML = '<i class="ti ti-copy"></i> Ver Duplicados';
+    if(contNormal) contNormal.style.display = 'block';
+    if(contDupes) contDupes.style.display = 'none';
+  }
+}
+
 function apSt(ns){
   var s=null;for(var i=0;i<SVC.length;i++){if(SVC[i].id===stId){s=SVC[i];break;}}
   if(!s)return;
