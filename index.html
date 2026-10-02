@@ -1618,7 +1618,7 @@ body.dark-mode .ds-card.alt {
         <div class="fg"><label class="fl">Telefono</label><input id="fph" placeholder="+52 33 1234 5678"></div>
       </div>
       <div class="r2">
-        <div class="fg"><label class="fl">Pasajeros</label><select id="fpx"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option><option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>22+</option></select></div>
+        <div class="fg"><label class="fl">Pasajeros</label><select id="fpx"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8+</option></select></div>
         <div class="fg"><label class="fl">Numero de vuelo</label><input id="ffl" placeholder="AM 456"></div>
       </div>
       <div class="fsep">Detalle del traslado</div>
@@ -1844,7 +1844,37 @@ body.dark-mode .ds-card.alt {
     <div class="mb" id="dtb"></div>
     <div class="mf"><button class="mbt mgh" onclick="prSvc(cDid)"><i class="ti ti-printer"></i> Imprimir</button>
       <button class="mbt msv" onclick="genPDF(cDid)"><i class="ti ti-file-type-pdf"></i> PDF Cotizacion</button>
+      <button class="mbt msv" style="background:#1B6B4F;color:#fff" onclick="openConfirm(cDid)"><i class="ti ti-file-check"></i> PDF Confirmación</button>
       <button class="mbt mgh" onclick="cM('ov-dt')">Cerrar</button></div>
+  </div>
+</div>
+
+
+<!-- Modal: Confirmación en PDF para el huesped -->
+<div class="ov" id="ov-confirm">
+  <div class="modal msm">
+    <div class="mh"><h2>Confirmación para Huésped</h2><button class="mc" onclick="cM('ov-confirm')">x</button></div>
+    <div class="mb">
+      <div style="font-size:13px;color:#555;margin-bottom:1.2rem">Se generará un PDF de confirmación profesional, listo para enviar al huésped por correo o WhatsApp.</div>
+
+      <div class="fg">
+        <label class="fl">Idioma del documento</label>
+        <div style="display:flex;gap:8px">
+          <button type="button" class="mbt mgh conf-lang active" data-lang="es" onclick="setConfirmLang('es')" style="flex:1">🇲🇽 Español</button>
+          <button type="button" class="mbt mgh conf-lang" data-lang="en" onclick="setConfirmLang('en')" style="flex:1">🇺🇸 English</button>
+        </div>
+        <div style="font-size:11px;color:#999;margin-top:6px">Se auto-selecciona por el lada del teléfono</div>
+      </div>
+
+      <div class="fg" style="margin-top:1.2rem">
+        <label class="fl">Resumen</label>
+        <div id="conf-summary" style="padding:14px;background:var(--n0);border:1px solid var(--bo);border-radius:6px;font-size:12px;line-height:1.7;color:var(--c0)"></div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="mbt mgh" onclick="cM('ov-confirm')">Cancelar</button>
+      <button class="mbt msv" style="background:#1B6B4F;color:#fff" onclick="genConfirmPDF()"><i class="ti ti-file-type-pdf"></i> Generar PDF</button>
+    </div>
   </div>
 </div>
 
@@ -2732,6 +2762,324 @@ function genAIWA(){
     if(loading)loading.style.display='none';
   });
 }
+
+
+// ============== CONFIRMACIÓN PDF PARA HUÉSPED ==============
+var _confirmLang='es';
+var _confirmSvc=null;
+
+function openConfirm(id){
+  var s=null;
+  for(var i=0;i<SVC.length;i++){if(SVC[i].id===id){s=SVC[i];break;}}
+  if(!s){alert('Servicio no encontrado');return;}
+  _confirmSvc=s;
+
+  // Auto-detect language by phone country code (+52 = ES, otherwise EN)
+  var ph=(s.phone||'').replace(/\s|-|\(|\)/g,'');
+  _confirmLang=(ph.indexOf('+52')===0||(ph.indexOf('52')===0&&ph.length<=13))?'es':'en';
+
+  // Set lang button state
+  document.querySelectorAll('.conf-lang').forEach(function(b){
+    var on=b.getAttribute('data-lang')===_confirmLang;
+    b.classList.toggle('active',on);
+    b.style.background=on?'#1B6B4F':'';
+    b.style.color=on?'#fff':'';
+  });
+
+  renderConfirmSummary();
+  oM('ov-confirm');
+}
+
+function setConfirmLang(lang){
+  _confirmLang=lang;
+  document.querySelectorAll('.conf-lang').forEach(function(b){
+    var on=b.getAttribute('data-lang')===lang;
+    b.classList.toggle('active',on);
+    b.style.background=on?'#1B6B4F':'';
+    b.style.color=on?'#fff':'';
+  });
+  renderConfirmSummary();
+}
+
+function _confirmApellido(s){
+  var tokens=(s.name||'Huésped').trim().split(/\s+/);
+  return tokens[tokens.length-1];
+}
+
+function _confirmFmtDateES(d){
+  if(!d)return'—';
+  var p=d.split('-'),fecha=new Date(p[0],p[1]-1,p[2]);
+  var dias=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  var meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  return dias[fecha.getDay()]+' '+fecha.getDate()+' de '+meses[fecha.getMonth()]+', '+fecha.getFullYear();
+}
+
+function _confirmFmtDateEN(d){
+  if(!d)return'—';
+  var p=d.split('-'),fecha=new Date(p[0],p[1]-1,p[2]);
+  var dias=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var meses=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return dias[fecha.getDay()]+', '+meses[fecha.getMonth()]+' '+fecha.getDate()+', '+fecha.getFullYear();
+}
+
+function _confirmFmtTimeEN(t){
+  if(!t)return'—';
+  var p=t.split(':'),h=parseInt(p[0],10),m=p[1]||'00';
+  var ampm=h>=12?'PM':'AM';
+  var h12=h%12||12;
+  return (h12<10?'0'+h12:h12)+':'+m+' '+ampm;
+}
+
+function renderConfirmSummary(){
+  if(!_confirmSvc)return;
+  var s=_confirmSvc,lang=_confirmLang;
+  var html='';
+  if(lang==='es'){
+    html='<b>Huésped:</b> '+(s.name||'—')+'<br>';
+    html+='<b>Fecha:</b> '+_confirmFmtDateES(s.date)+' · '+(s.time||'—')+' hrs<br>';
+    html+='<b>Ruta:</b> '+(s.origin||'—')+' → '+(s.dest||'—')+'<br>';
+    html+='<b>Pasajeros:</b> '+(s.pax||'1');
+    if(s.flight)html+=' · <b>Vuelo:</b> '+s.flight;
+  }else{
+    html='<b>Guest:</b> '+(s.name||'—')+'<br>';
+    html+='<b>Date:</b> '+_confirmFmtDateEN(s.date)+' · '+_confirmFmtTimeEN(s.time)+'<br>';
+    html+='<b>Route:</b> '+(s.origin||'—')+' → '+(s.dest||'—')+'<br>';
+    html+='<b>Passengers:</b> '+(s.pax||'1');
+    if(s.flight)html+=' · <b>Flight:</b> '+s.flight;
+  }
+  document.getElementById('conf-summary').innerHTML=html;
+}
+
+function genConfirmPDF(){
+  if(!_confirmSvc)return;
+  var s=_confirmSvc,lang=_confirmLang;
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,H=297;
+  var ink=[26,26,24];
+  var cream=[244,239,231];
+  var gold=[27,107,79]; // Nova verde profundo
+  var mid=[110,106,95];
+  var line=[220,215,205];
+
+  // Fondo crema completo
+  doc.setFillColor(cream[0],cream[1],cream[2]);
+  doc.rect(0,0,W,H,'F');
+
+  // Barra superior ink
+  doc.setFillColor(ink[0],ink[1],ink[2]);
+  doc.rect(0,0,W,34,'F');
+
+  // NOVA izquierda
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(18);
+  doc.setTextColor(cream[0],cream[1],cream[2]);
+  doc.setCharSpace(5);
+  doc.text('NOVA',14,16);
+  doc.setCharSpace(0);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(6);
+  doc.setTextColor(180,175,165);
+  doc.setCharSpace(2.5);
+  doc.text('EXECUTIVE CHAUFFEUR SERVICE',14,22);
+  doc.text('GUADALAJARA · ZAPOPAN',14,27);
+  doc.setCharSpace(0);
+
+  // Etiqueta confirmación derecha
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(6.5);
+  doc.setTextColor(180,175,165);
+  doc.setCharSpace(1);
+  doc.text(lang==='es'?'CONFIRMACION':'CONFIRMATION',W-14,16,{align:'right'});
+  doc.setCharSpace(0);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  doc.setTextColor(cream[0],cream[1],cream[2]);
+  doc.text('#'+(s.id?s.id.substring(0,8).toUpperCase():'—'),W-14,23,{align:'right'});
+
+  // Línea verde bajo header
+  doc.setDrawColor(gold[0],gold[1],gold[2]);
+  doc.setLineWidth(0.6);
+  doc.line(0,34,W,34);
+
+  // Título bilingüe grande
+  doc.setFont('times','italic');
+  doc.setFontSize(26);
+  doc.setTextColor(ink[0],ink[1],ink[2]);
+  doc.text(lang==='es'?'Reservación confirmada':'Reservation confirmed',14,56);
+
+  // Saludo
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(10);
+  doc.setTextColor(mid[0],mid[1],mid[2]);
+  var greet=lang==='es'
+    ? 'Estimado Sr. '+_confirmApellido(s)+', su traslado está confirmado con los siguientes detalles.'
+    : 'Dear Mr. '+_confirmApellido(s)+', your transfer is confirmed with the following details.';
+  var greetLines=doc.splitTextToSize(greet,W-28);
+  doc.text(greetLines,14,64);
+
+  // --- Bloque: detalles del servicio ---
+  var y=84;
+  var labelSize=7,valueSize=11;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8);
+  doc.setTextColor(gold[0],gold[1],gold[2]);
+  doc.setCharSpace(2.5);
+  doc.text(lang==='es'?'DETALLES DEL SERVICIO':'SERVICE DETAILS',14,y);
+  doc.setCharSpace(0);
+  y+=4;
+  doc.setDrawColor(line[0],line[1],line[2]);
+  doc.setLineWidth(0.3);
+  doc.line(14,y,W-14,y);
+  y+=10;
+
+  function row(labelES,labelEN,value,yPos,isTwoCol,col2Label,col2Value){
+    var label=lang==='es'?labelES:labelEN;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(labelSize);
+    doc.setTextColor(mid[0],mid[1],mid[2]);
+    doc.setCharSpace(1.5);
+    doc.text(label.toUpperCase(),14,yPos);
+    doc.setCharSpace(0);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(valueSize);
+    doc.setTextColor(ink[0],ink[1],ink[2]);
+    doc.text(value||'—',14,yPos+5);
+    if(isTwoCol){
+      var cl=lang==='es'?col2Label:col2Label; // same label obj passed per-call
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(labelSize);
+      doc.setTextColor(mid[0],mid[1],mid[2]);
+      doc.setCharSpace(1.5);
+      doc.text(cl.toUpperCase(),W/2,yPos);
+      doc.setCharSpace(0);
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(valueSize);
+      doc.setTextColor(ink[0],ink[1],ink[2]);
+      doc.text(col2Value||'—',W/2,yPos+5);
+    }
+  }
+
+  // Fecha + Hora
+  var fechaStr=lang==='es'?_confirmFmtDateES(s.date):_confirmFmtDateEN(s.date);
+  var horaStr=lang==='es'?((s.time||'—')+' hrs'):_confirmFmtTimeEN(s.time);
+  row(lang==='es'?'Fecha':'Date', lang==='es'?'Fecha':'Date', fechaStr, y, true,
+      lang==='es'?'Hora':'Time', horaStr);
+  y+=16;
+
+  // Origen + Destino
+  row('Origen','Pick-up', s.origin||'—', y, true,
+      lang==='es'?'Destino':'Drop-off', s.dest||'—');
+  y+=16;
+
+  // Pasajeros + Vuelo
+  var paxStr=(s.pax||'1')+' '+(lang==='es'
+    ? ((s.pax||1)==1?'pasajero':'pasajeros')
+    : ((s.pax||1)==1?'passenger':'passengers'));
+  row(lang==='es'?'Pasajeros':'Passengers', lang==='es'?'Pasajeros':'Passengers', paxStr, y, true,
+      lang==='es'?'Vuelo':'Flight', s.flight||(lang==='es'?'No aplica':'N/A'));
+  y+=20;
+
+  // --- Chofer ---
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8);
+  doc.setTextColor(gold[0],gold[1],gold[2]);
+  doc.setCharSpace(2.5);
+  doc.text(lang==='es'?'SU CHOFER':'YOUR CHAUFFEUR',14,y);
+  doc.setCharSpace(0);
+  y+=4;
+  doc.line(14,y,W-14,y);
+  y+=10;
+
+  var hasDriver=s.chofer||s.vehicle;
+  if(hasDriver){
+    row(lang==='es'?'Chofer':'Chauffeur', lang==='es'?'Chofer':'Chauffeur',
+        s.chofer||(lang==='es'?'Por asignar':'To be assigned'), y, true,
+        lang==='es'?'Teléfono':'Phone', s.choferTel||(lang==='es'?'Por asignar':'To be assigned'));
+    y+=16;
+    row(lang==='es'?'Vehículo':'Vehicle', lang==='es'?'Vehículo':'Vehicle',
+        s.vehicle||(lang==='es'?'Por asignar':'To be assigned'), y, true,
+        lang==='es'?'Placas':'Plate', s.plate||(lang==='es'?'Por asignar':'To be assigned'));
+    y+=20;
+  }else{
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(10);
+    doc.setTextColor(mid[0],mid[1],mid[2]);
+    doc.text(lang==='es'
+      ? 'Los datos del chofer se confirmarán 24 horas antes del servicio.'
+      : 'Chauffeur details will be confirmed 24 hours prior to service.', 14, y);
+    y+=14;
+  }
+
+  // --- Punto de encuentro ---
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8);
+  doc.setTextColor(gold[0],gold[1],gold[2]);
+  doc.setCharSpace(2.5);
+  doc.text(lang==='es'?'PUNTO DE ENCUENTRO':'MEETING POINT',14,y);
+  doc.setCharSpace(0);
+  y+=4;
+  doc.line(14,y,W-14,y);
+  y+=8;
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(10);
+  doc.setTextColor(ink[0],ink[1],ink[2]);
+  var meetText=lang==='es'
+    ? 'Su chofer lo esperará en el lobby principal 15 minutos antes del horario de salida, portando un letrero con su nombre.'
+    : 'Your chauffeur will meet you at the main lobby 15 minutes prior to departure, carrying a sign with your name.';
+  var meetLines=doc.splitTextToSize(meetText,W-28);
+  doc.text(meetLines,14,y+5);
+  y+=22;
+
+  // --- Pago ---
+  if(s.cost!=null&&s.cost!==''){
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8);
+    doc.setTextColor(gold[0],gold[1],gold[2]);
+    doc.setCharSpace(2.5);
+    doc.text(lang==='es'?'INFORMACIÓN DE PAGO':'PAYMENT INFORMATION',14,y);
+    doc.setCharSpace(0);
+    y+=4;
+    doc.line(14,y,W-14,y);
+    y+=10;
+    var costStr='$'+Number(s.cost).toLocaleString(lang==='es'?'es-MX':'en-US',{minimumFractionDigits:2})+' MXN';
+    row(lang==='es'?'Costo total':'Total', lang==='es'?'Costo total':'Total', costStr, y, true,
+        lang==='es'?'Forma de pago':'Payment method', s.payment||(lang==='es'?'Por confirmar':'TBD'));
+    y+=18;
+  }
+
+  // --- Footer ---
+  var footerY=H-32;
+  doc.setDrawColor(gold[0],gold[1],gold[2]);
+  doc.setLineWidth(0.4);
+  doc.line(14,footerY,W-14,footerY);
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  doc.setTextColor(ink[0],ink[1],ink[2]);
+  doc.setCharSpace(3);
+  doc.text('NOVA TRANSPORTS',14,footerY+8);
+  doc.setCharSpace(0);
+  doc.setFont('helvetica','italic');
+  doc.setFontSize(8);
+  doc.setTextColor(mid[0],mid[1],mid[2]);
+  doc.text(lang==='es'
+    ? 'Para cualquier cambio o asistencia, contáctenos:'
+    : 'For any changes or assistance, contact us:',14,footerY+14);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(ink[0],ink[1],ink[2]);
+  doc.text('+52 33 2048 2422   ·   novatransports.com.mx',14,footerY+20);
+
+  // Guardar
+  var apellido=_confirmApellido(s).replace(/[^A-Za-z0-9]/g,'');
+  var dateStr=(s.date||'').replace(/-/g,'');
+  var fname='Nova_Confirmacion_'+apellido+'_'+dateStr+'.pdf';
+  doc.save(fname);
+  cM('ov-confirm');
+}
+// ============== FIN CONFIRMACIÓN PDF ==============
 
 
 function clearDR(ctx){
