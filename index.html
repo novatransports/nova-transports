@@ -17,6 +17,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB0re04XINyYJ0d5MbxXskmnuo4tAyV_-k&libraries=places"></script>
@@ -1499,7 +1500,7 @@ body.dark-mode .ds-card.alt {
 
 <div id="pg-users" style="display:none">
         <div class="th"><h3>Gestión de Usuarios</h3>
-          <button onclick="abrirNuevoUsuario()" style="background:linear-gradient(135deg,#1B6B4F,#0E4435);color:#fff;border:none;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:600;letter-spacing:.08em;cursor:pointer;text-transform:uppercase"><i class="ti ti-user-plus"></i> Nuevo Usuario</button>
+          <button onclick="migrarUsuarios()" title="Pasa a los usuarios viejos al login seguro" style="background:#fff;color:#0E4435;border:1px solid #EDE8DC;padding:9px 14px;border-radius:8px;font-size:12px;font-weight:600;letter-spacing:.06em;cursor:pointer;margin-right:8px">MIGRAR USUARIOS</button><button onclick="abrirNuevoUsuario()" style="background:linear-gradient(135deg,#1B6B4F,#0E4435);color:#fff;border:none;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:600;letter-spacing:.08em;cursor:pointer;text-transform:uppercase"><i class="ti ti-user-plus"></i> Nuevo Usuario</button>
         </div>
         <div id="users-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;margin-top:1rem"></div>
         <div style="margin-top:1.5rem">
@@ -1558,7 +1559,7 @@ body.dark-mode .ds-card.alt {
       </div>
       <div class="r2">
         <div class="fg"><label class="fl">Usuario para login *</label><input id="u-username" placeholder="Ej: carlos"></div>
-        <div class="fg"><label class="fl">Contraseña *</label><input id="u-password" placeholder="Contraseña segura"></div>
+        <div class="fg"><label class="fl">Contraseña *</label><input id="u-password" placeholder="Mínimo 6 letras (solo al crear)"></div>
       </div>
       <div class="r2">
         <div class="fg"><label class="fl">Rol *</label>
@@ -1566,6 +1567,7 @@ body.dark-mode .ds-card.alt {
             <option value="frontdesk">Front Desk (Recepción)</option>
             <option value="hoteladmin">Admin de Hotel/Origen</option>
             <option value="admin">Admin Total Nova</option>
+            <option value="lector">Solo lectura (agente)</option>
           </select>
         </div>
         <div class="fg"><label class="fl">Origen Asignado *</label>
@@ -2024,34 +2026,75 @@ firebase.initializeApp({
   appId:"1:950283139818:web:0aef9c973ca6222b377593"
 });
 var db=firebase.firestore();
-// Usuario de EMERGENCIA - hardcodeado en código para acceso garantizado
-// Si Firebase falla o la base de datos se borra, este usuario siempre funciona
-var EMERGENCY_USER = {id:'em',name:'Emergencia',username:'emergencia',password:'NovaEmergencia2026',role:'admin',ini:'EM',hotel:'all'};
+// ===== LOGIN CON FIREBASE AUTH =====
+// Las contraseñas ya no viven en el código ni en la base de datos: las guarda
+// Firebase Authentication. Cada usuario entra con su "usuario" de siempre; por
+// dentro se convierte en un correo interno <usuario>@usuarios.novatransports.com.mx.
+// El perfil (nombre, rol, origen) vive en users/{uid}, sin contraseña.
+var auth=firebase.auth();
+var EMAIL_DOMAIN='usuarios.novatransports.com.mx';
+function userEmail(u){return String(u||'').trim().toLowerCase().replace(/[^a-z0-9._-]/g,'')+'@'+EMAIL_DOMAIN;}
 
-// USERS empieza solo con el de emergencia; los demás se cargan desde Firebase
-var USERS=[EMERGENCY_USER];
+// App secundaria para crear cuentas sin cerrar la sesión del admin.
+var _authAdmin=null;
+function authAdmin(){
+  if(!_authAdmin){_authAdmin=firebase.initializeApp(firebase.app().options,'crear-usuarios').auth();}
+  return _authAdmin;
+}
 
-// Carga usuarios desde Firebase y los fusiona con el usuario de emergencia
+var USERS=[];
+// Carga los perfiles (sin contraseñas). Solo funciona con sesión iniciada.
 function cargarUsuariosFirebase(callback){
   db.collection('users').get().then(function(snap){
-    var firebaseUsers = [];
-    snap.forEach(function(doc){
-      var u = doc.data();
-      u.id = doc.id;
-      firebaseUsers.push(u);
-    });
-    // El usuario de emergencia siempre primero, después los de Firebase
-    USERS = [EMERGENCY_USER].concat(firebaseUsers);
-    console.log('Usuarios cargados desde Firebase:', firebaseUsers.length);
+    var lista=[];
+    snap.forEach(function(doc){var u=doc.data();u.id=doc.id;lista.push(u);});
+    USERS=lista;
     if(callback) callback(true);
   }).catch(function(err){
     console.error('Error cargando usuarios:', err);
-    // Si falla Firebase, al menos queda el de emergencia
     if(callback) callback(false);
   });
 }
-// Cargar usuarios al iniciar
-cargarUsuariosFirebase();
+
+// Usuarios viejos (con contraseña guardada en texto) que todavía no se migran.
+function esLegado(u){return u && typeof u.password==='string';}
+
+// Crea la cuenta de Auth de un usuario viejo con su misma contraseña,
+// guarda su perfil en users/{uid} y borra el documento viejo.
+function migrarUno(viejo){
+  var pwd=viejo.password;
+  if(!pwd||pwd.length<6) return Promise.reject({code:'clave-corta',user:viejo.username});
+  var a=authAdmin();
+  return a.createUserWithEmailAndPassword(userEmail(viejo.username),pwd).then(function(cred){
+    var perfil={name:viejo.name||'',ini:viejo.ini||'',username:viejo.username,role:viejo.role||'frontdesk',hotel:viejo.hotel||''};
+    return db.collection('users').doc(cred.user.uid).set(perfil).then(function(){
+      return a.signOut();
+    }).then(function(){
+      return db.collection('users').doc(viejo.id).delete();
+    });
+  });
+}
+
+// Botón de admin: migra a todos los usuarios viejos de una vez.
+function migrarUsuarios(){
+  var viejos=USERS.filter(esLegado);
+  if(!viejos.length){toast('No hay usuarios por migrar','ok');return;}
+  var ok=0,cortas=[],errores=[];
+  viejos.reduce(function(prom,v){
+    return prom.then(function(){
+      return migrarUno(v).then(function(){ok++;}).catch(function(e){
+        if(e&&e.code==='clave-corta')cortas.push(v.username);
+        else errores.push(v.username+': '+((e&&e.message)||e));
+      });
+    });
+  },Promise.resolve()).then(function(){
+    var msg='Migrados: '+ok+'.';
+    if(cortas.length)msg+=' Con contraseña de menos de 6 letras (bórralos y créalos de nuevo): '+cortas.join(', ')+'.';
+    if(errores.length)msg+=' Errores: '+errores.join(' | ');
+    alert(msg);
+    cargarUsuariosFirebase(function(){renderUsers();});
+  });
+}
 
 var SVC=[],CU=null,eId=null,stId=null,cfCb=null,cDid=null,_unsub=null,waId=null;
 var cy=new Date().getFullYear(),cm=new Date().getMonth();
@@ -2104,27 +2147,62 @@ function refreshAll(){
 function doLogin(){
   var u=document.getElementById('lu').value.trim();
   var p=document.getElementById('lp').value;
-  var usr=null;
-  // Comparación case-insensitive para usernames (más amigable)
-  for(var i=0;i<USERS.length;i++){
-    if(USERS[i].username.toLowerCase()===u.toLowerCase()&&USERS[i].password===p){
-      usr=USERS[i];break;
+  var err=document.getElementById('lerr');
+  if(!u||!p){err.textContent='Escribe usuario y contrasena';return;}
+  err.textContent='Entrando...';
+  auth.signInWithEmailAndPassword(userEmail(u),p).then(function(cred){
+    return entrarConPerfil(cred.user.uid);
+  }).catch(function(e){
+    var code=(e&&e.code)||'';
+    if(code==='auth/user-not-found'||code==='auth/invalid-login-credentials'||code==='auth/invalid-credential'||code==='auth/wrong-password'){
+      // Puede ser un usuario viejo que aun no se migra: se migra solo al entrar.
+      return loginLegado(u,p);
     }
-  }
-  if(!usr){document.getElementById('lerr').textContent='Usuario o contrasena incorrectos';return;}
-  CU=usr;
-  document.getElementById('lerr').textContent='';
-  document.getElementById('scr-login').classList.remove('on');
-  document.getElementById('scr-app').classList.add('on');
-  applyRole();updDate();startListen();setInterval(chkAlerts,60000);
-  setTimeout(function(){ try { novaSaludo(); } catch(e){} }, 100);
-  registerDevice();
-  gp('pg-dash',document.querySelector('.ni'));
+    if(code==='auth/too-many-requests'){err.textContent='Demasiados intentos. Espera unos minutos.';return;}
+    err.textContent='No se pudo entrar ('+code+')';
+  });
+}
+
+function loginLegado(u,p){
+  var err=document.getElementById('lerr');
+  return db.collection('users').where('username','==',u).get().then(function(snap){
+    var viejo=null;
+    snap.forEach(function(doc){var d=doc.data();if(esLegado(d)&&d.password===p){viejo=d;viejo.id=doc.id;}});
+    if(!viejo){err.textContent='Usuario o contrasena incorrectos';return;}
+    if(p.length<6){err.textContent='Tu contrasena es muy corta. Pide al administrador una nueva de 6 o mas letras.';return;}
+    return migrarUno(viejo).then(function(){
+      return auth.signInWithEmailAndPassword(userEmail(u),p);
+    }).then(function(cred){return entrarConPerfil(cred.user.uid);});
+  }).catch(function(){err.textContent='Usuario o contrasena incorrectos';});
+}
+
+function entrarConPerfil(uid){
+  return db.collection('users').doc(uid).get().then(function(doc){
+    if(!doc.exists){auth.signOut();document.getElementById('lerr').textContent='Tu usuario no tiene acceso. Habla con el administrador.';return;}
+    var usr=doc.data();usr.id=doc.id;
+    CU=usr;
+    document.getElementById('lerr').textContent='';
+    document.getElementById('scr-login').classList.remove('on');
+    document.getElementById('scr-app').classList.add('on');
+    cargarUsuariosFirebase();
+    applyRole();updDate();startListen();setInterval(chkAlerts,60000);
+    setTimeout(function(){ try { novaSaludo(); } catch(e){} }, 100);
+    registerDevice();
+    gp('pg-dash',document.querySelector('.ni'));
+  });
+}
+
+// Pide la contraseña del admin que tiene la sesion abierta (para Costos, Socios y RRHH).
+function verificarAdmin(pwd){
+  if(!CU||CU.role!=='admin'||!auth.currentUser)return Promise.resolve(false);
+  var cred=firebase.auth.EmailAuthProvider.credential(auth.currentUser.email,pwd);
+  return auth.currentUser.reauthenticateWithCredential(cred).then(function(){return true;}).catch(function(){return false;});
 }
 
 function doLogout(){
   if(_unsub){_unsub();_unsub=null;}
   CU=null;
+  auth.signOut();
   document.getElementById('scr-app').classList.remove('on');
   document.getElementById('scr-login').classList.add('on');
   document.getElementById('lu').value='';
@@ -3068,15 +3146,16 @@ function showCostAuth(){
 
 function verifyCostPwd(){
   var pwd=document.getElementById('cost-pwd').value;
-  var admin=USERS.find(function(u){return u.role==='admin';});
-  if(admin&&pwd===admin.password){
-    _costUnlocked=true;
-    cM('ov-cost-auth');
-    refreshAll();
-    toast('Acceso autorizado','ok');
-  }else{
-    document.getElementById('cost-err').textContent='Contrasena incorrecta';
-  }
+  verificarAdmin(pwd).then(function(ok){
+    if(ok){
+      _costUnlocked=true;
+      cM('ov-cost-auth');
+      refreshAll();
+      toast('Acceso autorizado','ok');
+    }else{
+      document.getElementById('cost-err').textContent='Solo un administrador, con su propia contrasena';
+    }
+  });
 }
 
 function toggleSound(btn){
@@ -4298,7 +4377,8 @@ var COLABS=[];
 
 function verifyColab(){
   var pwd=document.getElementById('colab-pwd').value;
-  if(pwd==='rrhh2026'){
+  verificarAdmin(pwd).then(function(ok){
+  if(ok){
     _colabUnlocked=true;
     cM('ov-colab-auth');
     document.getElementById('colab-pwd').value='';
@@ -4306,8 +4386,9 @@ function verifyColab(){
     gp('pg-colab',document.getElementById('ni-colab'));
     loadColabs();
   }else{
-    document.getElementById('colab-err').textContent='Clave incorrecta';
+    document.getElementById('colab-err').textContent='Solo un administrador, con su propia contrasena';
   }
+  });
 }
 
 function loadColabs(){
@@ -4434,7 +4515,8 @@ var _pendingReportNav=false;
 
 function verifyPartner(){
   var pwd=document.getElementById('partner-pwd').value;
-  if(pwd==='socios2026'){
+  verificarAdmin(pwd).then(function(ok){
+  if(ok){
     _partnerUnlocked=true;
     cM('ov-partner');
     document.getElementById('partner-pwd').value='';
@@ -4442,8 +4524,9 @@ function verifyPartner(){
     // Navigate to reports
     gp('pg-reports',document.getElementById('ni-reports'));
   }else{
-    document.getElementById('partner-err').textContent='Contrasena incorrecta';
+    document.getElementById('partner-err').textContent='Solo un administrador, con su propia contrasena';
   }
+  });
 }
 
 var _egresos=[
@@ -5279,7 +5362,7 @@ function abrirEditarUsuario(id){
   document.getElementById('u-name').value = u.name || '';
   document.getElementById('u-ini').value = u.ini || '';
   document.getElementById('u-username').value = u.username || '';
-  document.getElementById('u-password').value = u.password || '';
+  document.getElementById('u-password').value = '';
   document.getElementById('u-role').value = u.role || 'frontdesk';
   document.getElementById('u-hotel').value = u.hotel || 'JW Marriott';
   oM('ov-user');
@@ -5302,14 +5385,11 @@ function guardarUsuario(){
   var hotel = document.getElementById('u-hotel').value;
 
   // Validaciones
-  if(!name || !username || !password || !ini){
+  if(!name || !username || !ini || (!USER_EDITING_ID && !password)){
     alert('Por favor llena todos los campos obligatorios');
     return;
   }
-  if(password.length < 4){
-    alert('La contraseña debe tener al menos 4 caracteres');
-    return;
-  }
+
   // Verificar username no duplicado
   var existing = USERS.find(function(u){
     return u.username.toLowerCase() === username.toLowerCase() && u.id !== USER_EDITING_ID && u.id !== 'em';
@@ -5331,13 +5411,14 @@ function guardarUsuario(){
     name: name,
     ini: ini,
     username: username,
-    password: password,
     role: role,
     hotel: hotel
   };
 
   if(USER_EDITING_ID){
-    // Editar existente
+    // Editar perfil. La contraseña de otra persona no se puede cambiar desde aquí:
+    // para eso se borra el usuario y se crea de nuevo.
+    var viejo = USERS.find(function(x){return x.id === USER_EDITING_ID;});
     db.collection('users').doc(USER_EDITING_ID).update(userData).then(function(){
       toast('Usuario actualizado', 'ok');
       cM('ov-user');
@@ -5346,13 +5427,17 @@ function guardarUsuario(){
       toast('Error: ' + e.message, 'err');
     });
   } else {
-    // Crear nuevo
-    db.collection('users').add(userData).then(function(){
+    // Crear cuenta en Firebase Auth + perfil sin contraseña
+    if(password.length < 6){ alert('La contraseña debe tener al menos 6 caracteres'); return; }
+    var a = authAdmin();
+    a.createUserWithEmailAndPassword(userEmail(username), password).then(function(cred){
+      return db.collection('users').doc(cred.user.uid).set(userData).then(function(){ return a.signOut(); });
+    }).then(function(){
       toast('Usuario creado', 'ok');
       cM('ov-user');
       cargarUsuariosFirebase(function(){ renderUsers(); });
     }).catch(function(e){
-      toast('Error: ' + e.message, 'err');
+      toast('Error: ' + (e.code === 'auth/email-already-in-use' ? 'ese usuario ya existe' : e.message), 'err');
     });
   }
 }
