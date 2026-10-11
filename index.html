@@ -2176,9 +2176,26 @@ function loginLegado(u,p){
   }).catch(function(){err.textContent='Usuario o contrasena incorrectos';});
 }
 
+// Si el perfil quedo guardado con otro id, se busca por usuario (el mismo que
+// genera el correo de la cuenta) y se mueve a users/{uid}.
+function reubicarPerfil(uid){
+  var email=(auth.currentUser&&auth.currentUser.email)||'';
+  return db.collection('users').get().then(function(snap){
+    var hallado=null;
+    snap.forEach(function(d){var x=d.data();if(!hallado&&d.id!==uid&&!esLegado(x)&&x.username&&userEmail(x.username)===email){hallado={id:d.id,data:x};}});
+    if(!hallado)return null;
+    return db.collection('users').doc(uid).set(hallado.data).then(function(){
+      return db.collection('users').doc(hallado.id).delete();
+    }).then(function(){return db.collection('users').doc(uid).get();});
+  });
+}
+
 function entrarConPerfil(uid){
   return db.collection('users').doc(uid).get().then(function(doc){
-    if(!doc.exists){auth.signOut();document.getElementById('lerr').textContent='Tu usuario no tiene acceso. Habla con el administrador.';return;}
+    if(doc.exists)return doc;
+    return reubicarPerfil(uid).catch(function(){return null;});
+  }).then(function(doc){
+    if(!doc||!doc.exists){auth.signOut();document.getElementById('lerr').textContent='Tu usuario no tiene acceso. Habla con el administrador.';return;}
     var usr=doc.data();usr.id=doc.id;
     CU=usr;
     document.getElementById('lerr').textContent='';
