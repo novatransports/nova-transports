@@ -21,7 +21,7 @@ Hoy es {{fecha}}. Esto es lo que sabes ahora mismo del negocio y de los agentes:
 Reglas:
 - Contesta solo con estos datos. Si algo no está, dilo y sugiere a qué agente le toca.
 - Si pregunta por lo más importante, prioriza: lo que espera su OK, pagos, el siguiente servicio de Nova y la meta de Ordanza.
-- Cuando quiera ver algo en pantalla, usa ir_a_seccion (hoy, nova, ordanza, fabrica) o abrir_agente con el nombre del agente.
+- Cuando quiera ver algo en pantalla, usa ir_a_seccion (hoy, nova, ordanza, fabrica) o abrir_agente con el nombre del agente. Para mostrar el organigrama o los escritorios usa ver_vista (arbol, oficina, actividad).
 - Si los datos parecen viejos, usa datos_actuales.
 - No inventes clientes, cifras ni promesas. No envíes nada ni apruebes nada: tú informas y recomiendas; Santiago decide.
 ```
@@ -33,6 +33,7 @@ Marca **Wait for response** en las tres.
 |---|---|---|
 | `ir_a_seccion` | Muestra una sección del Centro de Mando | `seccion` (string): hoy, nova, ordanza o fabrica |
 | `abrir_agente` | Abre la ficha de un agente de la fábrica | `nombre` (string): nombre del agente |
+| `ver_vista` | Cambia la vista de la Fábrica | `vista` (string): arbol, oficina o actividad |
 | `datos_actuales` | Devuelve los datos más recientes del negocio | sin parámetros |
 
 ## 3. Seguridad
