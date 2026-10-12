@@ -495,7 +495,7 @@ var AREAS=[
     {nombre:'Asistente de ventas',rol:'Lee quién contestó y te deja el borrador en Gmail.',dias:DIAS,horas:['07:00','09:00','11:00','13:00','15:00','17:00','19:00','21:00','23:00']},
     {nombre:'Propuestas',rol:'Arma la propuesta dentro de tus precios.',plan:true}]},
   {nombre:'Demos y producción',c:'#2BE3FF',agentes:[
-    {nombre:'Constructor de demos',rol:'"Ya te hicimos tu página": un borrador real por prospecto.',plan:true},
+    {nombre:'Constructor de demos',rol:'Arma la propuesta con los datos reales de quien dijo que sí; tú la apruebas.',dias:[1,2,3,4,5,6],horas:['08:40','10:40','12:40','14:40','16:40','18:40','20:40','22:40']},
     {nombre:'Auditor web',rol:'Reporte gratis de la web y el Instagram del negocio.',plan:true},
     {nombre:'Desarrollador',rol:'Sitios y paneles de los clientes que cierras.',plan:true}]},
   {nombre:'Marketing',c:'#A78BFF',agentes:[
@@ -569,7 +569,7 @@ function responder(q){
   if(/factur|cu[aá]nto|dinero|vend/.test(t)){decir('Este mes llevas '+k(C.fact)+' facturados y '+k(C.porRealizar)+' por realizar. De eso, '+k(C.hab)+' es cargo a habitación que cobra el hotel.');return}
   if(/hoy/.test(t)){decir(C.hv.length?'Hoy: '+C.hv.map(function(s){return s.time+' '+(s.name||'')}).join(', ')+'.':'Hoy no hay servicios.');return}
   if(/ordanza|meta/.test(t)&&AG){var g=AG.ventas.ordanza;decir('Ordanza lleva '+k(g.acumulado)+' de los cien mil de la meta. El agente ha encontrado '+AG.ordanza.encontrados+' prospectos, '+AG.ordanza.enviados+' ya contactados y '+AG.ordanza.pendientes+' por enviar.');return}
-  if(/equipo|agente|prospect/.test(t)){decir('La fábrica tiene nueve agentes trabajando y once por construir. El Prospector de Ordanza busca veinte negocios cada mañana, el de Nova veinticinco los lunes, miércoles y viernes, el Vendedor manda correos a las diez y a las cuatro, el Asistente de ventas te deja borradores cada dos horas y Marketing arma tu campaña cada lunes.');return}
+  if(/equipo|agente|prospect/.test(t)){decir('La fábrica tiene diez agentes trabajando y diez por construir. El Prospector de Ordanza busca veinte negocios cada mañana, el de Nova veinticinco los lunes, miércoles y viernes, el Vendedor manda correos a las diez y a las cuatro, el Asistente de ventas te deja borradores cada dos horas y Marketing arma tu campaña cada lunes y el Constructor de demos prepara la propuesta de quien dijo que sí.');return}
   decir('Puedo decirte el resumen, qué sigue, los servicios de hoy o de mañana, lo facturado, hoteles o choferes. Pregúntame así.');
 }
 $('vform').addEventListener('submit',function(e){e.preventDefault();var q=$('vin').value.trim();if(q){responder(q);$('vin').value=''}});
