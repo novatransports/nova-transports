@@ -15,7 +15,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-<script src="vera-config.js"></script>
+<script src="vera-config.js?v=3"></script>
+<script>window.VERA_CONFIG=window.VERA_CONFIG||{};if(!window.VERA_CONFIG.agentId)window.VERA_CONFIG.agentId="agent_5801m4rtsy4newss32yqg8ntt6k5";</script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -1113,6 +1114,7 @@ function decir(t){vlog('ai',t);if(!('speechSynthesis' in window))return;speechSy
   u.onstart=function(){VS.habla=true;vst('habla','Hablando')};u.onend=u.onerror=function(){VS.habla=false;vst('lista','Lista para hablar')};speechSynthesis.speak(u)}
 function preguntar(q){q=String(q||'').trim();if(!q)return;vlog('yo',q);
   if(VS.conv){VS.conv.sendUserMessage(q);return}
+  if(VCFG.agentId){VS.pend=q;if(!$('vera-call').classList.contains('on'))iniciarEL();return}
   decir(respuestaLocal(q))}
 /* ElevenLabs: conversación de voz en tiempo real */
 function vozActiva(on){var b=$('vera-call');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);$('vera-call-t').textContent=on?'Terminar':'Hablar con Vera';$('mic').classList.toggle('on',on)}
@@ -1133,8 +1135,10 @@ function iniciarEL(){
       onModeChange:function(p){VS.mode=p.mode;vst(p.mode==='speaking'?'habla':'escucha',p.mode==='speaking'?'Hablando':'Te escucho')},
       onMessage:function(p){if(p&&p.message&&(p.source==='ai'||p.role==='agent'))vlog('ai',p.message);else if(p&&p.message)vlog('yo',p.message)},
       onError:function(msg){$('vera-nota').textContent='ElevenLabs: '+msg}
-    })}).then(function(c){VS.conv=c}).catch(function(e){VS.conv=null;vozActiva(false);vst('lista','Lista para hablar');
-      $('vera-nota').textContent=/Permission|NotAllowed/i.test(String(e&&e.name||e))?'Necesito permiso del micrófono para hablar contigo.':'No pude conectar la voz de ElevenLabs. Te contesto con la voz del navegador.';});
+    })}).then(function(c){VS.conv=c;if(VS.pend){c.sendUserMessage(VS.pend);VS.pend=null}}).catch(function(e){VS.conv=null;vozActiva(false);vst('lista','Lista para hablar');
+      var det=String((e&&(e.message||e.reason||e.name))||e||'');
+      $('vera-nota').textContent=/NotFound|device not found/i.test(det)?'No encuentro un micrófono en este equipo. Conecta uno (o usa el iPhone) para oír mi voz.':/Permission|NotAllowed/i.test(det)?'Necesito permiso del micrófono para hablarte con mi voz. Actívalo en el candado de la barra de direcciones.':'No pude conectar mi voz de ElevenLabs ('+det.slice(0,140)+'). Revisa que el agente sea público o permita novatransports.github.io.';
+      if(VS.pend){decir(respuestaLocal(VS.pend));VS.pend=null}});
 }
 function terminarEL(){if(VS.conv){VS.conv.endSession();VS.conv=null}vozActiva(false);vst('lista','Lista para hablar')}
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null;
@@ -1193,7 +1197,7 @@ if('IntersectionObserver' in window)new IntersectionObserver(function(es){$('voi
 })();
 var _render=render,_renderAgente=renderAgente,vLlego=false;function trasRender(){if(!vLlego){vLlego=true;llegada()}else pintarBrief()}
 render=function(){_render();trasRender()};renderAgente=function(){_renderAgente();trasRender()};
-if(!VCFG.agentId)$('vera-nota').textContent='Voz del navegador. Cuando conectes ElevenLabs, Vera habla con su voz y conversa contigo en tiempo real.';
+$('vera-nota').textContent=VCFG.agentId?'Voz de ElevenLabs. Toca "Hablar con Vera" o escríbele; te pedirá el micrófono una vez.':'Voz del navegador. Cuando conectes ElevenLabs, Vera habla con su voz y conversa contigo en tiempo real.';
 
 /* Navegación */
 document.querySelectorAll('nav a').forEach(function(a){a.addEventListener('click',function(){document.querySelectorAll('nav a').forEach(function(b){b.classList.remove('on')});a.classList.add('on')})});
