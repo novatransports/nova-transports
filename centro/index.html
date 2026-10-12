@@ -153,6 +153,41 @@ svg.chart text{fill:var(--faint);font:500 10px var(--mono)}
 .agent .stat{font:700 20px var(--display);color:var(--c)}
 .agent a{color:var(--cyan);font-size:13px;text-decoration:none}
 
+/* Fábrica */
+.fab-top{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.boss{position:relative;justify-self:center;width:min(100%,560px);display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:16px 18px;border-radius:14px;border:1px solid color-mix(in srgb,var(--amber) 55%,transparent);background:linear-gradient(160deg,rgba(40,32,14,.55),rgba(12,19,34,.95));box-shadow:0 0 30px rgba(255,194,75,.12)}
+.boss .av{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font:700 16px var(--display);color:#05101C;background:var(--amber);box-shadow:0 0 18px rgba(255,194,75,.6)}
+.boss b{font:700 17px var(--display);letter-spacing:.06em;text-transform:uppercase}
+.boss .role{font-size:13px;color:var(--dim)}
+.boss .mini2{font:600 11px var(--mono);color:var(--dim);text-align:right;display:grid;gap:4px}
+.trunk{justify-self:center;width:2px;height:20px;background:linear-gradient(var(--amber),var(--edge))}
+.areas{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;border-top:1px solid var(--edge);padding-top:16px}
+.area{border:1px solid var(--edge);border-radius:12px;background:rgba(7,11,20,.55);padding:12px;display:grid;gap:8px;align-content:start;min-width:0}
+.area-h{display:flex;align-items:center;gap:8px}
+.area-h i{width:10px;height:10px;border-radius:3px;background:var(--c);box-shadow:0 0 10px var(--c)}
+.area-h b{font:700 14px var(--display);letter-spacing:.1em;text-transform:uppercase}
+.area-h span{margin-left:auto;font:600 11px var(--mono);color:var(--dim);white-space:nowrap}
+.ag{display:grid;gap:3px;padding:9px 10px;border-radius:9px;background:linear-gradient(160deg,rgba(20,33,58,.95),rgba(14,22,40,.95));border:1px solid rgba(30,45,74,.9);min-width:0}
+.ag .nm{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
+.ag .nm em{font-style:normal;margin-left:auto;font:600 10px var(--mono);letter-spacing:.08em;color:var(--sc);white-space:nowrap}
+.ag .dt{font:500 11px/1.4 var(--mono);color:var(--dim)}
+.ag .ds{font-size:12px;color:var(--faint)}
+.ag.plan{background:transparent;border:1px dashed rgba(85,104,138,.6)}
+.ag.plan .nm{color:var(--dim)}
+.sd{width:8px;height:8px;border-radius:50%;flex:none;background:var(--sc);box-shadow:0 0 8px var(--sc)}
+.sd.run{animation:pulse 1.6s ease-in-out infinite}
+.sd.plan{background:transparent;border:1.5px dashed var(--faint);box-shadow:none}
+.feed{list-style:none;margin:0;padding:0;max-height:420px;overflow:auto;font-size:13px}
+.feed li{display:grid;grid-template-columns:62px 150px minmax(0,1fr);gap:10px;padding:9px 4px;border-bottom:1px solid rgba(30,45,74,.7);align-items:baseline}
+.feed li:last-child{border-bottom:0}
+.feed .ft{font:600 11px var(--mono);color:var(--faint)}
+.feed .fw{font:600 12px var(--mono);color:var(--c);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feed .fm{min-width:0}
+.feed .fm small{color:var(--dim)}
+.feed li.bad .fm{color:var(--rose)}
+@media (max-width:1100px){.fab-top{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:820px){.feed li{grid-template-columns:56px minmax(0,1fr)}.feed .fm{grid-column:1/-1}.boss{grid-template-columns:auto minmax(0,1fr)}.boss .mini2{grid-column:1/-1;text-align:left}}
+
 /* Voz */
 .voice{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:20;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
 .vbubble{max-width:min(340px,80vw);background:rgba(12,19,34,.96);border:1px solid var(--edge);border-radius:12px;padding:12px 14px;font-size:14px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
@@ -208,7 +243,7 @@ svg.chart text{fill:var(--faint);font:500 10px var(--mono)}
       <a href="#hoy" class="on">Hoy <span id="nv-hoy">0</span></a>
       <a href="#nova">Nova <span>MES</span></a>
       <a href="#ordanza">Ordanza <span id="nv-ordz">·</span></a>
-      <a href="#equipo">Equipo <span>7</span></a>
+      <a href="#fabrica">Fábrica <span id="nv-fab">·</span></a>
     </nav>
     <div class="who"><span id="whoami"></span><button type="button" id="logout">Cerrar sesión</button></div>
   </aside>
@@ -270,9 +305,18 @@ svg.chart text{fill:var(--faint);font:500 10px var(--mono)}
       <div class="card"><div class="sub" style="margin-bottom:10px">Últimos pagos</div><ul class="plist" id="o-pag"><li class="empty">Todavía no llega ningún pago de Mercado Pago.</li></ul></div>
     </section>
 
-    <section id="equipo">
-      <div class="sh"><h2>Tu equipo de agentes</h2><span class="sub">Trabajan solos en la nube · horario de Guadalajara</span></div>
-      <div class="team" id="team"></div>
+    <section id="fabrica">
+      <div class="sh"><h2>La fábrica</h2><span class="sub" id="fab-sub">Trabajan solos en la nube · horario de Guadalajara</span></div>
+      <div class="fab-top">
+        <div class="kpi" style="--c:var(--lime)"><span class="k">Agentes trabajando</span><span class="v" id="f-act">0</span><span class="s" id="f-act-s">—</span></div>
+        <div class="kpi" style="--c:var(--cyan)"><span class="k">Correos enviados hoy</span><span class="v" id="f-env">0</span><span class="s">Por el Vendedor</span></div>
+        <div class="kpi" style="--c:var(--violet)"><span class="k">Prospectos esta semana</span><span class="v" id="f-pro">0</span><span class="s">Nova y Ordanza</span></div>
+        <div class="kpi" style="--c:var(--rose)"><span class="k">Esperan tu OK</span><span class="v" id="f-ok">0</span><span class="s" id="f-ok-s">Borradores y respuestas</span></div>
+      </div>
+      <div class="boss" id="boss"></div>
+      <div class="trunk" aria-hidden="true"></div>
+      <div class="areas" id="areas"></div>
+      <div class="card"><div class="sub" style="margin-bottom:6px">Actividad de los agentes · lo más reciente arriba</div><ul class="feed" id="feed"><li class="empty">La actividad aparece con la próxima actualización del agente (cada hora).</li></ul></div>
     </section>
   </main>
 </div>
@@ -328,7 +372,7 @@ auth.onAuthStateChanged(function(user){
     $('login').hidden=true;$('app').hidden=false;$('voice').hidden=false;
     $('hola').innerHTML='Hola, <em>'+esc((CU.name||'').split(' ')[0]||'Santiago')+'</em>';
     $('whoami').textContent=CU.name||CU.username;
-    renderTeam();
+    renderFabrica();
     db.collection('agente').doc('resumen').onSnapshot(function(d){if(d.exists){try{AG=JSON.parse(d.data().json);renderAgente()}catch(e){}}},function(){$('ag-act').textContent='Sin permiso para leer los datos del agente'});
     unsub=db.collection('services').onSnapshot(function(snap){
       SV=snap.docs.map(function(x){var s=x.data();s.id=x.id;s.cost=money(s.price||s.cost);return s});
@@ -432,31 +476,81 @@ function renderAgente(){
   var nx=g.hitos.filter(function(h){return g.acumulado<h.monto})[0];
   $('o-goal').innerHTML='<div class="sub" style="margin-bottom:12px">'+(nx?'Siguiente hito: <b>'+k(nx.monto)+'</b> el '+esc(dLarga(nx.fecha))+'. Faltan '+k(nx.monto-g.acumulado)+'.':'Meta cumplida.')+'</div><div class="gw"><div class="rail"><i id="o-rail"></i>'+g.hitos.map(function(h){return '<span class="tick" style="left:'+(h.monto/g.meta*100)+'%"></span>'}).join('')+'</div>'+g.hitos.map(function(h){return '<span class="mk" style="left:'+(h.monto/g.meta*100)+'%">'+k(h.monto)+'<br>'+esc(new Date(h.fecha+'T12:00:00').toLocaleDateString('es-MX',{day:'numeric',month:'short'}))+'</span>'}).join('')+'</div>';
   requestAnimationFrame(function(){var r=$('o-rail');if(r)r.style.width=pct+'%'});
+  renderFabrica();
   function grupos(el,a){var mxg=Math.max.apply(null,a.porGrupo.map(function(r){return r.n}))||1;el.innerHTML=a.porGrupo.map(function(r){return '<div class="bar"><span class="nm">'+esc(r.nombre)+'</span><span class="n">'+r.n+'</span><span class="tk"><i data-w="'+(r.n/mxg*100).toFixed(0)+'"></i></span></div>'}).join('');requestAnimationFrame(function(){el.querySelectorAll('.tk i').forEach(function(i){i.style.width=i.dataset.w+'%'})})}
   function ult(el,a,c){el.innerHTML=a.ultimos.map(function(p){return '<li><div><span class="n1">'+esc(p.nombre)+'</span>'+(p.enviado?'<span class="tg" style="--c:var(--lime)">Enviado</span>':p.fuerte?'<span class="tg" style="--c:'+c+'">Fuerte</span>':'')+'</div><div class="n2">'+esc(p.ciudad)+' · '+esc(p.grupo)+'</div><div class="n2">'+esc(p.porque)+'</div></li>'}).join('')||'<li class="empty">Sin prospectos todavía.</li>'}
   grupos($('o-reg'),o);grupos($('n-reg'),n);ult($('o-ult'),o,'var(--ordz)');ult($('n-ult'),n,'var(--nova)');
   if(v.pagos&&v.pagos.length)$('o-pag').innerHTML=v.pagos.map(function(p){return '<li><div><span class="n1">'+esc(p.quien)+'</span><span class="tg" style="--c:var(--amber)">'+esc(p.negocio)+'</span></div><div class="n2">'+esc(p.concepto)+' · '+esc(p.medio)+' · '+esc(p.fecha)+' '+esc(p.hora)+'</div><div class="n1" style="color:var(--lime)">'+mx(money(p.monto))+' '+esc(p.moneda)+'</div></li>'}).join('');
 }
 
-/* ---------------- Equipo ---------------- */
-var TEAM=[
-  {ini:'PN',nombre:'Prospector Nova',rol:'Busca hoteles, empresas y eventos en Guadalajara y escribe la propuesta.',c:'#4FB3FF',dias:[1,4],horas:['08:00'],link:'https://claude.ai/artifact/MBSKXmKQH8e3hnauoPmUjP',lt:'Ver prospectos'},
-  {ini:'PO',nombre:'Prospector Ordanza',rol:'20 negocios al día en México y Latinoamérica con su WhatsApp listo.',c:'#A78BFF',dias:[1,2,3,4,5,6],horas:['07:47'],link:'https://claude.ai/artifact/WYas88qDDxTKcgtEfepFM6',lt:'Ver prospectos'},
-  {ini:'VE',nombre:'Vendedor',rol:'Manda los correos de prospección, 25 al día por negocio.',c:'#2BE3FF',dias:[1,2,3,4,5],horas:['10:00','16:00']},
-  {ini:'SE',nombre:'Seguimientos',rol:'A las 48 horas deja listo el segundo mensaje a quien no contestó.',c:'#7CFFB2',dias:[1,2,3,4,5,6],horas:['07:20']},
-  {ini:'CO',nombre:'Cobranza',rol:'Revisa Mercado Pago cada hora y te avisa quién pagó.',c:'#FFC24B',dias:[0,1,2,3,4,5,6],horas:['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00']},
-  {ini:'MK',nombre:'Marketing',rol:'Arma la campaña de la semana para Nova y Ordanza: posts, historias y correo.',c:'#FF5C8A',dias:[1],horas:['09:00']},
-  {ini:'JO',nombre:'Jefe de Operaciones',rol:'Tu resumen de la mañana: pagos, respuestas, pendientes y una recomendación.',c:'#E7F0FF',dias:[0,1,2,3,4,5,6],horas:['08:20']}
+/* ---------------- Fábrica ---------------- */
+var DIAS=[0,1,2,3,4,5,6],HORAS=['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'];
+var DIRECTOR={ini:'DI',nombre:'Director',rol:'Tu resumen de cada mañana: pagos, respuestas, pendientes y la jugada del día.',dias:DIAS,horas:['08:20']};
+var AREAS=[
+  {nombre:'Ventas',c:'#FF5C8A',agentes:[
+    {nombre:'Prospector Ordanza',rol:'20 negocios al día en México y Latinoamérica, con su mensaje listo.',dias:[1,2,3,4,5,6],horas:['07:47'],link:'https://claude.ai/artifact/WYas88qDDxTKcgtEfepFM6'},
+    {nombre:'Prospector Nova',rol:'25 eventos y wedding planners de Guadalajara.',dias:[1,3,5],horas:['08:00'],link:'https://claude.ai/artifact/MBSKXmKQH8e3hnauoPmUjP'},
+    {nombre:'Vendedor',rol:'Manda los correos de prospección, hasta 25 al día por negocio.',dias:[1,2,3,4,5],horas:['10:00','16:00']},
+    {nombre:'Seguimientos',rol:'A las 48 horas deja listo el segundo mensaje.',dias:[1,2,3,4,5,6],horas:['07:20']},
+    {nombre:'Asistente de ventas',rol:'Lee quién contestó y te deja el borrador en Gmail.',dias:DIAS,horas:['07:00','09:00','11:00','13:00','15:00','17:00','19:00','21:00','23:00']},
+    {nombre:'Propuestas',rol:'Arma la propuesta dentro de tus precios.',plan:true}]},
+  {nombre:'Demos y producción',c:'#2BE3FF',agentes:[
+    {nombre:'Constructor de demos',rol:'Arma la propuesta con los datos reales de quien dijo que sí; tú la apruebas.',dias:[1,2,3,4,5,6],horas:['08:40','10:40','12:40','14:40','16:40','18:40','20:40','22:40']},
+    {nombre:'Auditor web',rol:'Reporte gratis de la web y el Instagram del negocio.',plan:true},
+    {nombre:'Desarrollador',rol:'Sitios y paneles de los clientes que cierras.',plan:true}]},
+  {nombre:'Marketing',c:'#A78BFF',agentes:[
+    {nombre:'Marketing',rol:'Campaña de la semana para Nova y Ordanza.',dias:[1],horas:['09:00']},
+    {nombre:'Productor de video',rol:'Reels de antes y después.',plan:true},
+    {nombre:'Publicador',rol:'Sube a TikTok e Instagram después de tu OK.',plan:true}]},
+  {nombre:'Finanzas',c:'#FFC24B',agentes:[
+    {nombre:'Cobranza',rol:'Revisa Mercado Pago cada hora y te avisa quién pagó.',dias:DIAS,horas:HORAS},
+    {nombre:'Analista',rol:'Actualiza este Centro de Mando cada hora.',dias:DIAS,horas:['07:30','08:30','09:30','10:30','11:30','12:30','13:30','14:30','15:30','16:30','17:30','18:30','19:30','20:30','21:30','22:30']},
+    {nombre:'Contador',rol:'Utilidad por negocio y por canal.',plan:true}]},
+  {nombre:'Operación Nova',c:'#4FB3FF',agentes:[
+    {nombre:'Coordinador de eventos',rol:'Expo, FIL, Akron, posadas y bodas.',plan:true}]},
+  {nombre:'Laboratorio digital',c:'#7CFFB2',agentes:[
+    {nombre:'Buscador de nichos',rol:'Qué ya se vende en Etsy y Hotmart.',plan:true},
+    {nombre:'Diseñador de plantillas',rol:'Las 10 plantillas del piloto.',plan:true}]},
+  {nombre:'Socios',c:'#FF9F6B',agentes:[
+    {nombre:'Reclutador de socios',rol:'Contadores, imprentas y planners que refieren clientes.',plan:true}]}
 ];
+var COLOR={};AREAS.forEach(function(a){a.agentes.forEach(function(g){COLOR[g.nombre]=a.c})});COLOR.Director='#FFC24B';COLOR['Tú']='#E7F0FF';
 function nextRun(a){
   var n=new Date();for(var d=0;d<8;d++){var day=new Date(n.getTime()+d*864e5);if(a.dias.indexOf(day.getDay())<0)continue;
     for(var i=0;i<a.horas.length;i++){var p=a.horas[i].split(':');var t=new Date(day);t.setHours(+p[0],+p[1],0,0);if(t>n)return t}}return null;
 }
-function renderTeam(){
-  $('team').innerHTML=TEAM.map(function(a){var nr=nextRun(a);var cuando=nr?(iso(nr)===iso(new Date())?'hoy':nr.toLocaleDateString('es-MX',{weekday:'long'}))+' '+nr.toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'}):'—';
-    return '<div class="agent" style="--c:'+a.c+'"><div class="hd"><span class="av">'+a.ini+'</span><div><b>'+a.nombre+'</b><div class="role">'+a.rol+'</div></div></div><div class="st"><i></i>Próxima vez: '+esc(cuando)+'</div>'+(a.link?'<a href="'+a.link+'" target="_blank" rel="noopener">'+a.lt+' →</a>':'')+'</div>'}).join('');
+function cuando(t){if(!t)return '—';var hoy=iso(new Date()),d=iso(t),man=iso(new Date(Date.now()+864e5)),ay=iso(new Date(Date.now()-864e5));
+  var h=t.toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'});return (d===hoy?'hoy':d===man?'mañana':d===ay?'ayer':t.toLocaleDateString('es-MX',{weekday:'short',day:'numeric'}))+' '+h}
+function hace(t){var m=Math.round((Date.now()-t)/6e4);return m<1?'ahora':m<60?'hace '+m+' min':m<1440?'hace '+Math.round(m/60)+' h':'hace '+Math.round(m/1440)+' d'}
+function estado(a){
+  var r=AG&&AG.agentes&&AG.agentes[a.nombre];
+  if(r&&r.enCurso)return {txt:'TRABAJANDO',c:'var(--lime)',run:true,r:r};
+  if(r&&r.estado==='fallo')return {txt:'FALLÓ',c:'var(--rose)',r:r};
+  if(r&&r.enabled===false)return {txt:'PAUSADO',c:'var(--faint)',r:r};
+  return {txt:'LISTO',c:'var(--cyan)',r:r};
 }
-setInterval(renderTeam,60000);
+function tarjeta(a){
+  if(a.plan)return '<div class="ag plan"><div class="nm"><span class="sd plan"></span>'+esc(a.nombre)+'<em style="--sc:var(--faint)">POR CONSTRUIR</em></div><div class="ds">'+esc(a.rol)+'</div></div>';
+  var e=estado(a),ult=e.r&&e.r.ultima?new Date(e.r.ultima):null,nr=nextRun(a);
+  return '<div class="ag" style="--sc:'+e.c+'"><div class="nm"><span class="sd'+(e.run?' run':'')+'"></span>'+esc(a.nombre)+'<em>'+e.txt+'</em></div><div class="ds">'+esc(a.rol)+'</div>'+
+    '<div class="dt">'+(ult?'Última vez '+esc(hace(ult)):'Sin corridas registradas')+' · próxima '+esc(cuando(nr))+'</div>'+(e.r&&e.r.hoy?'<div class="dt" style="color:var(--ink)">'+esc(e.r.hoy)+'</div>':'')+(a.link?'<a class="dt" style="color:var(--cyan);text-decoration:none" href="'+a.link+'" target="_blank" rel="noopener">Ver su trabajo →</a>':'')+'</div>';
+}
+function renderFabrica(){
+  var vivos=0,plan=0;AREAS.forEach(function(a){a.agentes.forEach(function(g){g.plan?plan++:vivos++})});vivos++;
+  var e=estado(DIRECTOR),ult=e.r&&e.r.ultima?new Date(e.r.ultima):null;
+  $('boss').innerHTML='<span class="av">DI</span><div><b>Director</b><div class="role">'+esc(DIRECTOR.rol)+'</div></div><div class="mini2"><span>'+(ult?'Último resumen '+esc(hace(ult)):'Sin resumen todavía')+'</span><span>Próximo '+esc(cuando(nextRun(DIRECTOR)))+'</span></div>';
+  $('areas').innerHTML=AREAS.map(function(a){var n=a.agentes.filter(function(g){return !g.plan}).length;
+    return '<div class="area" style="--c:'+a.c+'"><div class="area-h"><i></i><b>'+esc(a.nombre)+'</b><span>'+n+' de '+a.agentes.length+'</span></div>'+a.agentes.map(tarjeta).join('')+'</div>'}).join('');
+  var trab=0;if(AG&&AG.agentes)Object.keys(AG.agentes).forEach(function(k){if(AG.agentes[k].enCurso)trab++});
+  $('f-act').textContent=vivos;$('f-act-s').textContent=(trab?trab+' trabajando ahora · ':'')+plan+' por construir';
+  $('nv-fab').textContent=vivos;
+  if(!AG||!AG.fabrica)return;
+  var F=AG.fabrica;$('f-env').textContent=F.enviadosHoy||0;$('f-pro').textContent=F.prospectosSemana||0;$('f-ok').textContent=F.esperanOK||0;
+  var act=(AG.actividad||[]);
+  if(act.length)$('feed').innerHTML=act.map(function(x){var t=new Date(x.t);
+    return '<li'+(x.mal?' class="bad"':'')+'><span class="ft">'+(x.soloFecha?esc(t.toLocaleDateString('es-MX',{day:'numeric',month:'short'})):esc(t.toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'})))+'</span><span class="fw" style="--c:'+(COLOR[x.agente]||'var(--dim)')+'">'+esc(x.agente)+'</span><span class="fm">'+esc(x.texto)+(x.detalle?' <small>· '+esc(x.detalle)+'</small>':'')+'</span></li>'}).join('');
+}
+setInterval(renderFabrica,60000);
 
 /* ---------------- Voz ---------------- */
 var voz=null;
@@ -475,7 +569,7 @@ function responder(q){
   if(/factur|cu[aá]nto|dinero|vend/.test(t)){decir('Este mes llevas '+k(C.fact)+' facturados y '+k(C.porRealizar)+' por realizar. De eso, '+k(C.hab)+' es cargo a habitación que cobra el hotel.');return}
   if(/hoy/.test(t)){decir(C.hv.length?'Hoy: '+C.hv.map(function(s){return s.time+' '+(s.name||'')}).join(', ')+'.':'Hoy no hay servicios.');return}
   if(/ordanza|meta/.test(t)&&AG){var g=AG.ventas.ordanza;decir('Ordanza lleva '+k(g.acumulado)+' de los cien mil de la meta. El agente ha encontrado '+AG.ordanza.encontrados+' prospectos, '+AG.ordanza.enviados+' ya contactados y '+AG.ordanza.pendientes+' por enviar.');return}
-  if(/equipo|agente|prospect/.test(t)){decir('Tu equipo tiene siete agentes. El Prospector de Ordanza busca veinte negocios cada mañana, el de Nova diez los lunes y jueves, el Vendedor manda correos a las diez y a las cuatro, y Marketing arma tu campaña cada lunes.');return}
+  if(/equipo|agente|prospect/.test(t)){decir('La fábrica tiene diez agentes trabajando y diez por construir. El Prospector de Ordanza busca veinte negocios cada mañana, el de Nova veinticinco los lunes, miércoles y viernes, el Vendedor manda correos a las diez y a las cuatro, el Asistente de ventas te deja borradores cada dos horas y Marketing arma tu campaña cada lunes y el Constructor de demos prepara la propuesta de quien dijo que sí.');return}
   decir('Puedo decirte el resumen, qué sigue, los servicios de hoy o de mañana, lo facturado, hoteles o choferes. Pregúntame así.');
 }
 $('vform').addEventListener('submit',function(e){e.preventDefault();var q=$('vin').value.trim();if(q){responder(q);$('vin').value=''}});
