@@ -1135,7 +1135,7 @@ function iniciarEL(){
       onModeChange:function(p){VS.mode=p.mode;vst(p.mode==='speaking'?'habla':'escucha',p.mode==='speaking'?'Hablando':'Te escucho')},
       onMessage:function(p){if(p&&p.message&&(p.source==='ai'||p.role==='agent'))vlog('ai',p.message);else if(p&&p.message)vlog('yo',p.message)},
       onError:function(msg){$('vera-nota').textContent='ElevenLabs: '+msg}
-    })}).then(function(c){VS.conv=c;if(VS.pend){c.sendUserMessage(VS.pend);VS.pend=null}}).catch(function(e){VS.conv=null;vozActiva(false);vst('lista','Lista para hablar');
+    })}).then(function(c){VS.conv=c;try{c.sendContextualUpdate('Eres Vera, la directora de operaciones con IA de Santiago. Usa estos datos en vivo del Centro de Mando para responder con precisión, razonar, comparar y recomendar el siguiente paso. Si algo no está aquí, dilo; no inventes.\n'+contexto())}catch(e){}if(VS.pend){c.sendUserMessage(VS.pend);VS.pend=null}}).catch(function(e){VS.conv=null;vozActiva(false);vst('lista','Lista para hablar');
       var det=String((e&&(e.message||e.reason||e.name))||e||'');
       $('vera-nota').textContent=/NotFound|device not found/i.test(det)?'No encuentro un micrófono en este equipo. Conecta uno (o usa el iPhone) para oír mi voz.':/Permission|NotAllowed/i.test(det)?'Necesito permiso del micrófono para hablarte con mi voz. Actívalo en el candado de la barra de direcciones.':'No pude conectar mi voz de ElevenLabs ('+det.slice(0,140)+'). Revisa que el agente sea público o permita novatransports.github.io.';
       if(VS.pend){decir(respuestaLocal(VS.pend));VS.pend=null}});
