@@ -188,6 +188,136 @@ svg.chart text{fill:var(--faint);font:500 10px var(--mono)}
 @media (max-width:1100px){.fab-top{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:820px){.feed li{grid-template-columns:56px minmax(0,1fr)}.feed .fm{grid-column:1/-1}.boss{grid-template-columns:auto minmax(0,1fr)}.boss .mini2{grid-column:1/-1;text-align:left}}
 
+/* Fábrica: planta animada de agentes */
+.fab-tabs{display:flex;gap:4px;border-bottom:1px solid var(--edge);flex-wrap:wrap;align-items:flex-end}
+.fab-tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:8px 14px;font:700 12px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--dim);cursor:pointer}
+.fab-tabs button.on{color:var(--ink);border-bottom-color:var(--cyan)}
+.fab-tabs .chips{margin-left:auto;display:flex;gap:6px;padding-bottom:6px}
+.chip{background:rgba(7,11,20,.6);border:1px solid var(--edge);border-radius:999px;padding:5px 11px;font:600 11px var(--mono);letter-spacing:.08em;color:var(--dim);cursor:pointer}
+.chip.on{color:#05101C;background:var(--cyan);border-color:var(--cyan)}
+.fab-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.cond{border:1px solid rgba(139,108,255,.45);border-radius:12px;background:linear-gradient(160deg,rgba(28,24,60,.75),rgba(12,19,34,.95));padding:14px 16px;display:grid;gap:10px;box-shadow:0 0 40px rgba(139,108,255,.12)}
+.cond-h{display:flex;align-items:center;gap:12px}
+.cond-h .dia{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:50%;border:1px solid var(--amber);box-shadow:0 0 16px rgba(255,194,75,.45)}
+.cond-h .dia i{width:14px;height:14px;background:var(--amber);transform:rotate(45deg);box-shadow:0 0 10px var(--amber)}
+.cond-h b{font:700 15px var(--mono);letter-spacing:.14em}
+.cond-h small{display:block;font:500 12px var(--mono);color:var(--dim)}
+.cond-log{display:grid;gap:8px}
+.cond-log div{font:500 12px/1.5 var(--mono);color:var(--ink)}
+.cond-log div span{display:block;font:700 10px var(--mono);letter-spacing:.14em;color:var(--violet)}
+.cond-log div em{font-style:normal;color:var(--dim)}
+.cond form{display:flex;gap:8px}
+.cond input{flex:1;min-width:0;background:rgba(7,11,20,.7);border:1px solid var(--edge);border-radius:999px;padding:9px 14px;font:500 13px var(--mono)}
+.cond form button{border:1px solid var(--violet);background:rgba(139,108,255,.15);color:var(--ink);border-radius:999px;padding:0 14px;font:700 11px var(--mono);letter-spacing:.1em;cursor:pointer}
+.planta{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr));align-items:start}
+.ala.dir{grid-column:1/-1}
+.ala{border:1px solid color-mix(in srgb,var(--c) 35%,var(--edge));border-radius:14px;padding:10px;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 7%,transparent),rgba(7,11,20,.55))}
+.ala-h{display:flex;align-items:center;gap:8px;margin:2px 4px 10px}
+.ala-h i{width:10px;height:10px;border-radius:3px;background:var(--c);box-shadow:0 0 10px var(--c)}
+.ala-h b{font:700 13px var(--mono);letter-spacing:.18em;text-transform:uppercase}
+.ala-h span{margin-left:auto;font:600 11px var(--mono);color:var(--dim)}
+.celdas{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px}
+.celda{position:relative;height:196px;border-radius:10px;overflow:hidden;cursor:pointer;border:1px solid rgba(141,162,196,.22);
+  background:linear-gradient(180deg,#0f1930 0 62%,#0b1324 62% 100%);box-shadow:inset 0 -30px 40px rgba(0,0,0,.35);text-align:left;padding:0;color:inherit;width:100%}
+.celda:hover{border-color:var(--c)}
+.celda .luz{position:absolute;left:50%;top:-30px;width:140px;height:110px;transform:translateX(-50%);background:radial-gradient(ellipse at top,color-mix(in srgb,var(--c) 30%,transparent),transparent 70%);opacity:.55}
+.celda .rejas{position:absolute;inset:0 0 42px 0;z-index:4;pointer-events:none;
+  background:repeating-linear-gradient(90deg,transparent 0 17px,rgba(170,190,220,.42) 17px 20px),linear-gradient(rgba(170,190,220,.45),rgba(170,190,220,.45)) 0 10px/100% 3px no-repeat;
+  transition:transform 1s cubic-bezier(.7,0,.3,1)}
+.celda.trabaja .rejas{transform:translateY(-104%)}
+.celda .num{position:absolute;top:6px;left:8px;z-index:5;font:700 10px var(--mono);color:var(--faint);letter-spacing:.1em}
+.celda .placa{position:absolute;left:0;right:0;bottom:0;height:42px;z-index:6;padding:5px 9px;background:rgba(5,9,18,.88);border-top:1px solid rgba(141,162,196,.18);display:grid;gap:1px}
+.celda .placa b{font:700 12px var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.celda .placa small{display:flex;gap:6px;align-items:center;font:600 10px var(--mono);color:var(--dim);white-space:nowrap;overflow:hidden}
+.celda .placa small i{width:7px;height:7px;border-radius:50%;flex:none;background:var(--sc);box-shadow:0 0 8px var(--sc)}
+.celda .placa small em{font-style:normal;color:var(--sc);letter-spacing:.08em}
+/* escritorio y robot */
+.esc{position:absolute;left:50%;bottom:52px;transform:translateX(-50%);width:120px;height:92px;z-index:2}
+.mesa{position:absolute;left:0;right:0;bottom:0;height:14px;border-radius:3px;background:linear-gradient(#3a4a6a,#24324d);box-shadow:0 4px 0 #151f33}
+.mesa::before,.mesa::after{content:"";position:absolute;bottom:-18px;width:6px;height:18px;background:#1b2740}
+.mesa::before{left:10px}.mesa::after{right:10px}
+.mon{position:absolute;right:6px;bottom:14px;width:40px;height:30px;border-radius:4px;background:#0a1220;border:2px solid #4a5a7c;overflow:hidden}
+.mon::after{content:"";position:absolute;left:50%;bottom:-8px;width:8px;height:6px;transform:translateX(-50%);background:#4a5a7c}
+.mon i{position:absolute;inset:3px;border-radius:2px;background:color-mix(in srgb,var(--c) 30%,#0a1220)}
+.taza{position:absolute;left:8px;bottom:14px;width:10px;height:10px;border-radius:0 0 3px 3px;background:#e8e2d6}
+.bot{position:absolute;left:30px;bottom:12px;width:40px;height:60px}
+.bot .cab{position:absolute;left:6px;top:0;width:28px;height:22px;border-radius:7px;background:linear-gradient(#c9d4e8,#8d9bb8);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);transform-origin:50% 100%}
+.bot .cab::before{content:"";position:absolute;left:4px;right:4px;top:7px;height:7px;border-radius:4px;background:var(--c);box-shadow:0 0 8px var(--c)}
+.bot .cab::after{content:"";position:absolute;left:12px;top:-7px;width:3px;height:7px;background:#8d9bb8;box-shadow:0 -3px 0 1px var(--c)}
+.bot .cue{position:absolute;left:4px;top:22px;width:32px;height:26px;border-radius:8px 8px 4px 4px;background:var(--c);opacity:.9}
+.bot .bra{position:absolute;top:30px;width:8px;height:16px;border-radius:4px;background:#8d9bb8;transform-origin:50% 0}
+.bot .bra.i{left:0}.bot .bra.d{right:0}
+.globo{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:5;max-width:150px;padding:4px 8px;border-radius:8px;background:rgba(231,240,255,.95);color:#0b1222;font:700 10px var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:flota 3s ease-in-out infinite}
+.globo::after{content:"";position:absolute;left:50%;bottom:-4px;width:8px;height:8px;background:inherit;transform:translateX(-50%) rotate(45deg)}
+.zzz{position:absolute;left:58%;top:40px;z-index:3;font:800 14px var(--mono);color:var(--dim)}
+.zzz span{position:absolute;animation:zz 3s linear infinite;opacity:0}
+.zzz span:nth-child(2){animation-delay:1s;left:10px}.zzz span:nth-child(3){animation-delay:2s;left:20px}
+.vapor{position:absolute;left:9px;bottom:26px;width:4px;height:10px;border-radius:2px;background:rgba(231,240,255,.35);animation:vapor 2.4s ease-in infinite}
+.sirena{position:absolute;top:8px;right:10px;z-index:5;width:14px;height:14px;border-radius:50%;background:var(--rose);box-shadow:0 0 18px 6px rgba(255,92,138,.7);animation:pulse .8s infinite}
+.cartel{position:absolute;left:50%;top:34px;transform:translateX(-50%) rotate(-3deg);z-index:2;width:96px;padding:8px 6px;border-radius:4px;background:#e9dfc6;color:#3b2f1a;text-align:center;font:800 11px var(--mono);letter-spacing:.12em;box-shadow:0 6px 14px rgba(0,0,0,.4)}
+.cartel small{display:block;font:600 9px var(--body);letter-spacing:0;margin-top:4px}
+/* estados */
+.celda.trabaja .mon i{background:repeating-linear-gradient(180deg,var(--lime) 0 2px,transparent 2px 5px);opacity:.85;animation:scroll 1s linear infinite}
+.celda.trabaja .bra{animation:teclea .22s ease-in-out infinite alternate}
+.celda.trabaja .bra.d{animation-delay:.11s}
+.celda.trabaja .cab{animation:asiente 1.2s ease-in-out infinite}
+.celda.trabaja{border-color:color-mix(in srgb,var(--lime) 55%,transparent);box-shadow:0 0 22px rgba(124,255,178,.15),inset 0 -30px 40px rgba(0,0,0,.35)}
+.celda.listo .cab{animation:respira 4s ease-in-out infinite}
+.celda.duerme .cab{transform:rotate(-18deg) translate(4px,10px)}
+.celda.duerme .cab::before{background:#33415e;box-shadow:none}
+.celda.duerme .mon i{background:#0a1220}
+.celda.duerme .luz{opacity:.12}
+.celda.falla{border-color:var(--rose);animation:alerta 1.2s ease-in-out infinite}
+.celda.falla .mon i{background:var(--rose);animation:pulse .6s infinite}
+.celda.falla .bra{transform:rotate(150deg)}
+.celda.pausa{filter:grayscale(1) brightness(.7)}
+.celda.vacante{height:150px;border-style:dashed;background:linear-gradient(180deg,#0c1426 0 62%,#091020 62% 100%)}
+.celda.director{grid-column:1/-1;justify-self:center;max-width:460px;height:210px;border-color:color-mix(in srgb,var(--amber) 55%,transparent)}
+.celda.director .esc{transform:translateX(-50%) scale(1.15);transform-origin:50% 100%}
+@keyframes teclea{to{transform:rotate(-38deg)}}
+@keyframes asiente{50%{transform:translateY(2px)}}
+@keyframes respira{50%{transform:translateY(-2px)}}
+@keyframes zz{0%{opacity:0;transform:translate(0,0) scale(.7)}30%{opacity:1}100%{opacity:0;transform:translate(14px,-26px) scale(1.2)}}
+@keyframes vapor{0%{opacity:0;transform:translateY(0)}40%{opacity:1}100%{opacity:0;transform:translateY(-12px) scaleX(1.6)}}
+@keyframes scroll{to{background-position:0 10px}}
+@keyframes flota{50%{transform:translate(-50%,-3px)}}
+@keyframes alerta{50%{box-shadow:0 0 26px rgba(255,92,138,.45)}}
+/* detalle */
+.velo{position:fixed;inset:0;z-index:40;background:rgba(3,6,12,.6);backdrop-filter:blur(3px)}
+.ficha{position:fixed;z-index:41;top:0;right:0;bottom:0;width:min(420px,100%);overflow:auto;background:linear-gradient(180deg,var(--panel2),var(--deck));border-left:1px solid var(--edge);padding:22px 20px calc(24px + env(safe-area-inset-bottom,0px));display:grid;gap:14px;align-content:start;animation:entra .25s ease-out}
+.ficha .x{justify-self:end;background:none;border:1px solid var(--edge);border-radius:8px;padding:6px 10px;color:var(--dim);cursor:pointer}
+.ficha h3{margin:0;font:700 22px var(--display);letter-spacing:.04em}
+.ficha .rol{color:var(--dim);font-size:14px}
+.ficha dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 14px;font-size:13px}
+.ficha dt{font:600 11px var(--mono);letter-spacing:.12em;color:var(--faint);text-transform:uppercase;padding-top:2px}
+.ficha dd{margin:0}
+.ficha a{color:var(--cyan)}
+@keyframes entra{from{transform:translateX(30px);opacity:0}}
+/* gráfica, pendientes y terminal */
+.fab-g{display:grid;grid-template-columns:1.3fr 1fr;gap:12px}
+.leyenda{display:flex;gap:14px;font:600 11px var(--mono);color:var(--dim);margin-top:6px}
+.leyenda i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:var(--c)}
+.pend{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.pend li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;padding:9px 10px;border-radius:9px;background:rgba(7,11,20,.55);border:1px solid var(--edge)}
+.pend li i{grid-row:span 2;width:8px;height:8px;margin-top:6px;border-radius:50%;background:var(--rose);box-shadow:0 0 10px var(--rose)}
+.pend li small{color:var(--dim);font-size:12px}
+.term{background:#050913;border:1px solid var(--edge);border-radius:12px;overflow:hidden}
+.term-h{display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid var(--edge);font:700 11px var(--mono);letter-spacing:.16em;color:var(--dim);flex-wrap:wrap}
+.term-h .dots i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;background:var(--c)}
+.term-h select{margin-left:auto;background:#0a1220;color:var(--ink);border:1px solid var(--edge);border-radius:6px;padding:4px 8px;font:600 11px var(--mono)}
+.term ol{list-style:none;margin:0;padding:8px 12px;max-height:440px;overflow:auto;font:500 12px/1.65 var(--mono)}
+.term li{display:grid;grid-template-columns:84px 190px minmax(0,1fr);gap:10px;animation:rise .4s both}
+.term li .t{color:var(--faint);white-space:nowrap}
+.term li .a{color:var(--c);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.term li .a::before{content:"CAST ";color:var(--faint);font-weight:500}
+.term li.bad .m{color:var(--rose)}
+.term li .m small{color:var(--dim)}
+.term li.cursor .m::after{content:"▋";color:var(--lime);animation:pulse 1s infinite}
+.org{display:grid;gap:12px}
+@media (max-width:1100px){.fab-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.fab-g{grid-template-columns:1fr}}
+@media (max-width:820px){.fab-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.celdas{grid-template-columns:repeat(2,minmax(0,1fr))}.celda{height:186px}.celda.vacante{height:132px}.cartel{top:26px}.esc{transform:translateX(-50%) scale(.9);transform-origin:50% 100%}.term li{grid-template-columns:52px minmax(0,1fr)}.term li .m{grid-column:1/-1;margin-bottom:6px}.fab-tabs .chips{margin-left:0;width:100%}}
+.ficha .term li{grid-template-columns:62px minmax(0,1fr)}
+
 /* Voz */
 .voice{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:20;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
 .vbubble{max-width:min(340px,80vw);background:rgba(12,19,34,.96);border:1px solid var(--edge);border-radius:12px;padding:12px 14px;font-size:14px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
@@ -306,17 +436,37 @@ svg.chart text{fill:var(--faint);font:500 10px var(--mono)}
     </section>
 
     <section id="fabrica">
-      <div class="sh"><h2>La fábrica</h2><span class="sub" id="fab-sub">Trabajan solos en la nube · horario de Guadalajara</span></div>
-      <div class="fab-top">
-        <div class="kpi" style="--c:var(--lime)"><span class="k">Agentes trabajando</span><span class="v" id="f-act">0</span><span class="s" id="f-act-s">—</span></div>
-        <div class="kpi" style="--c:var(--cyan)"><span class="k">Correos enviados hoy</span><span class="v" id="f-env">0</span><span class="s">Por el Vendedor</span></div>
-        <div class="kpi" style="--c:var(--violet)"><span class="k">Prospectos esta semana</span><span class="v" id="f-pro">0</span><span class="s">Nova y Ordanza</span></div>
-        <div class="kpi" style="--c:var(--rose)"><span class="k">Esperan tu OK</span><span class="v" id="f-ok">0</span><span class="s" id="f-ok-s">Borradores y respuestas</span></div>
+      <div class="sh"><h2>La fábrica</h2><span class="sub" id="fab-sub">Agentes en la nube · horario de Guadalajara</span></div>
+      <div class="fab-kpis">
+        <div class="kpi" style="--c:var(--cyan)"><span class="k">Agentes</span><span class="v" id="f-tot">0</span><span class="s" id="f-tot-s">—</span></div>
+        <div class="kpi" style="--c:var(--lime)"><span class="k">Trabajando ahora</span><span class="v" id="f-act">0</span><span class="s" id="f-act-s">—</span></div>
+        <div class="kpi" style="--c:var(--violet)"><span class="k">Turnos de hoy</span><span class="v" id="f-tur">0</span><span class="s" id="f-tur-s">—</span></div>
+        <div class="kpi" style="--c:var(--amber)"><span class="k">Correos hoy</span><span class="v" id="f-env">0</span><span class="s" id="f-pro">—</span></div>
+        <div class="kpi" style="--c:var(--rose)"><span class="k">Esperan tu OK</span><span class="v" id="f-ok">0</span><span class="s" id="f-ok-s">Borradores y propuestas</span></div>
       </div>
-      <div class="boss" id="boss"></div>
-      <div class="trunk" aria-hidden="true"></div>
-      <div class="areas" id="areas"></div>
-      <div class="card"><div class="sub" style="margin-bottom:6px">Actividad de los agentes · lo más reciente arriba</div><ul class="feed" id="feed"><li class="empty">La actividad aparece con la próxima actualización del agente (cada hora).</li></ul></div>
+      <div class="cond" id="cond"></div>
+      <div class="fab-tabs" role="tablist">
+        <button type="button" class="on" data-v="planta">Planta</button>
+        <button type="button" data-v="org">Organigrama</button>
+        <button type="button" data-v="act">Actividad</button>
+        <div class="chips" id="chips">
+          <button type="button" class="chip on" data-b="">Todo</button>
+          <button type="button" class="chip" data-b="o">Ordanza</button>
+          <button type="button" class="chip" data-b="n">Nova</button>
+        </div>
+      </div>
+      <div id="v-planta" class="planta"></div>
+      <div id="v-org" class="org" hidden><div class="boss" id="boss"></div><div class="trunk" aria-hidden="true"></div><div class="areas" id="areas"></div></div>
+      <div id="v-act" hidden>
+        <div class="fab-g">
+          <div class="card"><div class="sub">Trabajo de los agentes · últimos 14 días</div><div id="f-chart"></div><div class="leyenda"><span style="--c:var(--lime)"><i></i>Hecho</span><span style="--c:var(--rose)"><i></i>Con falla</span></div></div>
+          <div class="card"><div class="sub" style="margin-bottom:10px">Esperan tu OK</div><ul class="pend" id="pend"><li class="empty">Nada pendiente. La fábrica sigue sola.</li></ul></div>
+        </div>
+      </div>
+      <div class="term">
+        <div class="term-h"><span class="dots"><i style="--c:var(--rose)"></i><i style="--c:var(--amber)"></i><i style="--c:var(--lime)"></i></span>ACTIVIDAD EN VIVO<select id="f-area" aria-label="Filtrar por área"><option value="">Todas las áreas</option></select></div>
+        <ol id="feed"><li class="cursor"><span class="t">--:--</span><span class="a" style="--c:var(--dim)">SISTEMA</span><span class="m">La actividad aparece con la próxima actualización (cada hora)</span></li></ol>
+      </div>
     </section>
   </main>
 </div>
@@ -485,72 +635,151 @@ function renderAgente(){
 
 /* ---------------- Fábrica ---------------- */
 var DIAS=[0,1,2,3,4,5,6],HORAS=['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'];
-var DIRECTOR={ini:'DI',nombre:'Director',rol:'Tu resumen de cada mañana: pagos, respuestas, pendientes y la jugada del día.',dias:DIAS,horas:['08:20']};
+var PROYECTO='https://claude.ai/code/project/chan_01711Kjwts43siN7FapaWZcc';
+var DIRECTOR={ini:'DI',nombre:'Director',b:'',dice:'Preparando tu resumen…',rol:'Tu resumen de cada mañana: pagos, respuestas, pendientes y la jugada del día.',dias:DIAS,horas:['08:20']};
 var AREAS=[
   {nombre:'Ventas',c:'#FF5C8A',agentes:[
-    {nombre:'Prospector Ordanza',rol:'20 negocios al día en México y Latinoamérica, con su mensaje listo.',dias:[1,2,3,4,5,6],horas:['07:47'],link:'https://claude.ai/artifact/WYas88qDDxTKcgtEfepFM6'},
-    {nombre:'Prospector Nova',rol:'25 eventos y wedding planners de Guadalajara.',dias:[1,3,5],horas:['08:00'],link:'https://claude.ai/artifact/MBSKXmKQH8e3hnauoPmUjP'},
-    {nombre:'Vendedor',rol:'Manda los correos de prospección, hasta 25 al día por negocio.',dias:[1,2,3,4,5],horas:['10:00','16:00']},
-    {nombre:'Seguimientos',rol:'A las 48 horas deja listo el segundo mensaje.',dias:[1,2,3,4,5,6],horas:['07:20']},
-    {nombre:'Asistente de ventas',rol:'Lee quién contestó y te deja el borrador en Gmail.',dias:DIAS,horas:['07:00','09:00','11:00','13:00','15:00','17:00','19:00','21:00','23:00']},
-    {nombre:'Propuestas',rol:'Arma la propuesta dentro de tus precios.',plan:true}]},
+    {nombre:'Prospector Ordanza',b:'o',dice:'Buscando negocios…',rol:'20 negocios al día en México y Latinoamérica, con su mensaje listo.',dias:[1,2,3,4,5,6],horas:['07:47'],link:'https://claude.ai/artifact/WYas88qDDxTKcgtEfepFM6'},
+    {nombre:'Prospector Nova',b:'n',dice:'Buscando eventos…',rol:'25 eventos y wedding planners de Guadalajara.',dias:[1,3,5],horas:['08:00'],link:'https://claude.ai/artifact/MBSKXmKQH8e3hnauoPmUjP'},
+    {nombre:'Vendedor',b:'',dice:'Mandando correos…',rol:'Manda los correos de prospección, hasta 25 al día por negocio.',dias:[1,2,3,4,5],horas:['10:00','16:00']},
+    {nombre:'Seguimientos',b:'',dice:'Escribiendo seguimientos…',rol:'A las 48 horas deja listo el segundo mensaje.',dias:[1,2,3,4,5,6],horas:['07:20']},
+    {nombre:'Asistente de ventas',b:'',dice:'Leyendo respuestas…',rol:'Lee quién contestó y te deja el borrador en Gmail.',dias:DIAS,horas:['07:00','09:00','11:00','13:00','15:00','17:00','19:00','21:00','23:00']},
+    {nombre:'Propuestas',b:'o',rol:'Arma la propuesta dentro de tus precios.',plan:true}]},
   {nombre:'Demos y producción',c:'#2BE3FF',agentes:[
-    {nombre:'Constructor de demos',rol:'Arma la propuesta con los datos reales de quien dijo que sí; tú la apruebas.',dias:[1,2,3,4,5,6],horas:['08:40','10:40','12:40','14:40','16:40','18:40','20:40','22:40']},
-    {nombre:'Auditor web',rol:'Reporte gratis de la web y el Instagram del negocio.',plan:true},
-    {nombre:'Desarrollador',rol:'Sitios y paneles de los clientes que cierras.',plan:true}]},
+    {nombre:'Constructor de demos',b:'o',dice:'Armando propuesta…',rol:'Arma la propuesta con los datos reales de quien dijo que sí; tú la apruebas.',dias:[1,2,3,4,5,6],horas:['08:40','10:40','12:40','14:40','16:40','18:40','20:40','22:40'],link:'https://demos.ordanzacorp.com'},
+    {nombre:'Auditor web',b:'o',rol:'Reporte gratis de la web y el Instagram del negocio.',plan:true},
+    {nombre:'Desarrollador',b:'o',rol:'Sitios y paneles de los clientes que cierras.',plan:true}]},
   {nombre:'Marketing',c:'#A78BFF',agentes:[
-    {nombre:'Marketing',rol:'Campaña de la semana para Nova y Ordanza.',dias:[1],horas:['09:00']},
-    {nombre:'Productor de video',rol:'Reels de antes y después.',plan:true},
-    {nombre:'Publicador',rol:'Sube a TikTok e Instagram después de tu OK.',plan:true}]},
+    {nombre:'Marketing',b:'',dice:'Armando la campaña…',rol:'Campaña de la semana para Nova y Ordanza.',dias:[1],horas:['09:00']},
+    {nombre:'Productor de video',b:'',rol:'Reels de antes y después.',plan:true},
+    {nombre:'Publicador',b:'',rol:'Sube a TikTok e Instagram después de tu OK.',plan:true}]},
   {nombre:'Finanzas',c:'#FFC24B',agentes:[
-    {nombre:'Cobranza',rol:'Revisa Mercado Pago cada hora y te avisa quién pagó.',dias:DIAS,horas:HORAS},
-    {nombre:'Analista',rol:'Actualiza este Centro de Mando cada hora.',dias:DIAS,horas:['07:30','08:30','09:30','10:30','11:30','12:30','13:30','14:30','15:30','16:30','17:30','18:30','19:30','20:30','21:30','22:30']},
-    {nombre:'Contador',rol:'Utilidad por negocio y por canal.',plan:true}]},
+    {nombre:'Cobranza',b:'',dice:'Revisando Mercado Pago…',rol:'Revisa Mercado Pago cada hora y te avisa quién pagó.',dias:DIAS,horas:HORAS},
+    {nombre:'Analista',b:'',dice:'Actualizando el tablero…',rol:'Actualiza este Centro de Mando cada hora.',dias:DIAS,horas:['07:36','08:36','09:36','10:36','11:36','12:36','13:36','14:36','15:36','16:36','17:36','18:36','19:36','20:36','21:36','22:36']},
+    {nombre:'Contador',b:'',rol:'Utilidad por negocio y por canal.',plan:true}]},
   {nombre:'Operación Nova',c:'#4FB3FF',agentes:[
-    {nombre:'Coordinador de eventos',rol:'Expo, FIL, Akron, posadas y bodas.',plan:true}]},
+    {nombre:'Coordinador de eventos',b:'n',rol:'Expo, FIL, Akron, posadas y bodas.',plan:true}]},
   {nombre:'Laboratorio digital',c:'#7CFFB2',agentes:[
-    {nombre:'Buscador de nichos',rol:'Qué ya se vende en Etsy y Hotmart.',plan:true},
-    {nombre:'Diseñador de plantillas',rol:'Las 10 plantillas del piloto.',plan:true}]},
+    {nombre:'Buscador de nichos',b:'o',rol:'Qué ya se vende en Etsy y Hotmart.',plan:true},
+    {nombre:'Diseñador de plantillas',b:'o',rol:'Las 10 plantillas del piloto.',plan:true}]},
   {nombre:'Socios',c:'#FF9F6B',agentes:[
-    {nombre:'Reclutador de socios',rol:'Contadores, imprentas y planners que refieren clientes.',plan:true}]}
+    {nombre:'Reclutador de socios',b:'o',rol:'Contadores, imprentas y planners que refieren clientes.',plan:true}]}
 ];
-var COLOR={};AREAS.forEach(function(a){a.agentes.forEach(function(g){COLOR[g.nombre]=a.c})});COLOR.Director='#FFC24B';COLOR['Tú']='#E7F0FF';
-function nextRun(a){
-  var n=new Date();for(var d=0;d<8;d++){var day=new Date(n.getTime()+d*864e5);if(a.dias.indexOf(day.getDay())<0)continue;
-    for(var i=0;i<a.horas.length;i++){var p=a.horas[i].split(':');var t=new Date(day);t.setHours(+p[0],+p[1],0,0);if(t>n)return t}}return null;
-}
+var COLOR={},AREA_DE={},TODOS={};
+AREAS.forEach(function(a){a.agentes.forEach(function(g){COLOR[g.nombre]=a.c;AREA_DE[g.nombre]=a.nombre;TODOS[g.nombre]=g})});
+COLOR.Director='#FFC24B';AREA_DE.Director='Dirección';TODOS.Director=DIRECTOR;COLOR['Tú']='#E7F0FF';
+var FAB={vista:'planta',b:'',area:''};
+
+function runsDia(a,day){if(a.plan||a.dias.indexOf(day.getDay())<0)return [];
+  return a.horas.map(function(h){var p=h.split(':'),t=new Date(day);t.setHours(+p[0],+p[1],0,0);return t})}
+function nextRuns(a,n){var out=[],now=new Date();for(var d=0;d<8&&out.length<n;d++){runsDia(a,new Date(now.getTime()+d*864e5)).forEach(function(t){if(t>now&&out.length<n)out.push(t)})}return out}
+function nextRun(a){return nextRuns(a,1)[0]||null}
 function cuando(t){if(!t)return '—';var hoy=iso(new Date()),d=iso(t),man=iso(new Date(Date.now()+864e5)),ay=iso(new Date(Date.now()-864e5));
   var h=t.toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'});return (d===hoy?'hoy':d===man?'mañana':d===ay?'ayer':t.toLocaleDateString('es-MX',{weekday:'short',day:'numeric'}))+' '+h}
 function hace(t){var m=Math.round((Date.now()-t)/6e4);return m<1?'ahora':m<60?'hace '+m+' min':m<1440?'hace '+Math.round(m/60)+' h':'hace '+Math.round(m/1440)+' d'}
+function falta(t){if(!t)return '';var m=Math.round((t-Date.now())/6e4);return m<60?'en '+m+' min':m<1440?'en '+Math.round(m/60)+' h':cuando(t)}
+/* Estado: lo confirmado por el Analista manda; si no, el horario dice si está en turno (10 min desde su hora). */
 function estado(a){
-  var r=AG&&AG.agentes&&AG.agentes[a.nombre];
-  if(r&&r.enCurso)return {txt:'TRABAJANDO',c:'var(--lime)',run:true,r:r};
-  if(r&&r.estado==='fallo')return {txt:'FALLÓ',c:'var(--rose)',r:r};
-  if(r&&r.enabled===false)return {txt:'PAUSADO',c:'var(--faint)',r:r};
-  return {txt:'LISTO',c:'var(--cyan)',r:r};
+  if(a.plan)return {k:'vacante',txt:'POR CONSTRUIR',c:'var(--faint)'};
+  var r=AG&&AG.agentes&&AG.agentes[a.nombre],now=new Date(),ult=r&&r.ultima?new Date(r.ultima):null;
+  if(r&&r.enCurso)return {k:'trabaja',txt:'TRABAJANDO',c:'var(--lime)',r:r};
+  if(r&&r.enabled===false)return {k:'pausa',txt:'PAUSADO',c:'var(--faint)',r:r};
+  var turno=runsDia(a,now).filter(function(t){return now>=t&&now-t<10*6e4&&(!ult||ult<t)})[0];
+  if(turno)return {k:'trabaja',txt:'EN TURNO',c:'var(--lime)',r:r};
+  if(r&&r.estado==='fallo')return {k:'falla',txt:'FALLÓ',c:'var(--rose)',r:r};
+  var h=now.getHours(),quedan=runsDia(a,now).filter(function(t){return t>now}).length;
+  if(h<7||h>=23||!quedan)return {k:'duerme',txt:'DESCANSANDO',c:'var(--dim)',r:r};
+  return {k:'listo',txt:'LISTO',c:'var(--cyan)',r:r};
+}
+function pasa(a){return !FAB.b||!a.b||a.b===FAB.b}
+function celda(a,c,n,extra){
+  var e=estado(a),nr=nextRun(a);
+  if(e.k==='vacante')return '<button type="button" class="celda vacante" style="--c:'+c+';--sc:var(--faint)" data-ag="'+esc(a.nombre)+'"><span class="num">CELDA '+n+'</span><div class="cartel">SE BUSCA<small>'+esc(a.nombre)+'</small></div><div class="placa"><b>'+esc(a.nombre)+'</b><small><i></i><em>POR CONSTRUIR</em></small></div></button>';
+  var globo=e.k==='trabaja'?'<span class="globo">'+esc(a.dice||'Trabajando…')+'</span>':e.k==='falla'?'<span class="globo" style="background:var(--rose)">¡Algo falló!</span>':'';
+  return '<button type="button" class="celda '+e.k+(extra||'')+'" style="--c:'+c+';--sc:'+e.c+'" data-ag="'+esc(a.nombre)+'">'+
+    '<span class="luz"></span><span class="num">'+(extra?'OFICINA':'CELDA '+n)+'</span>'+globo+(e.k==='falla'?'<span class="sirena"></span>':'')+
+    (e.k==='duerme'?'<span class="zzz"><span>z</span><span>z</span><span>Z</span></span>':'')+
+    '<div class="esc"><div class="bot"><span class="cab"></span><span class="cue"></span><span class="bra i"></span><span class="bra d"></span></div><span class="mon"><i></i></span><span class="taza"></span>'+(e.k==='listo'?'<span class="vapor"></span>':'')+'<span class="mesa"></span></div>'+
+    '<span class="rejas"></span>'+
+    '<div class="placa"><b>'+esc(a.nombre)+'</b><small><i></i><em>'+e.txt+'</em>'+(nr?'· '+esc(falta(nr)):'')+'</small></div></button>';
 }
 function tarjeta(a){
   if(a.plan)return '<div class="ag plan"><div class="nm"><span class="sd plan"></span>'+esc(a.nombre)+'<em style="--sc:var(--faint)">POR CONSTRUIR</em></div><div class="ds">'+esc(a.rol)+'</div></div>';
   var e=estado(a),ult=e.r&&e.r.ultima?new Date(e.r.ultima):null,nr=nextRun(a);
-  return '<div class="ag" style="--sc:'+e.c+'"><div class="nm"><span class="sd'+(e.run?' run':'')+'"></span>'+esc(a.nombre)+'<em>'+e.txt+'</em></div><div class="ds">'+esc(a.rol)+'</div>'+
-    '<div class="dt">'+(ult?'Última vez '+esc(hace(ult)):'Sin corridas registradas')+' · próxima '+esc(cuando(nr))+'</div>'+(e.r&&e.r.hoy?'<div class="dt" style="color:var(--ink)">'+esc(e.r.hoy)+'</div>':'')+(a.link?'<a class="dt" style="color:var(--cyan);text-decoration:none" href="'+a.link+'" target="_blank" rel="noopener">Ver su trabajo →</a>':'')+'</div>';
+  return '<div class="ag" style="--sc:'+e.c+'"><div class="nm"><span class="sd'+(e.k==='trabaja'?' run':'')+'"></span>'+esc(a.nombre)+'<em>'+e.txt+'</em></div><div class="ds">'+esc(a.rol)+'</div>'+
+    '<div class="dt">'+(ult?'Última vez '+esc(hace(ult)):'Sin corridas registradas')+' · próxima '+esc(cuando(nr))+'</div>'+(e.r&&e.r.hoy?'<div class="dt" style="color:var(--ink)">'+esc(e.r.hoy)+'</div>':'')+'</div>';
 }
+function hora(x){var t=new Date(x.t);return x.soloFecha?t.toLocaleDateString('es-MX',{day:'numeric',month:'short'}):t.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})}
 function renderFabrica(){
-  var vivos=0,plan=0;AREAS.forEach(function(a){a.agentes.forEach(function(g){g.plan?plan++:vivos++})});vivos++;
+  var vivos=0,plan=0,trab=0,turnos=0,hechos=0,now=new Date(),lista=[DIRECTOR];
+  AREAS.forEach(function(a){lista=lista.concat(a.agentes)});
+  lista.forEach(function(g){if(g.plan){plan++;return}vivos++;if(estado(g).k==='trabaja')trab++;
+    var rs=runsDia(g,now);turnos+=rs.length;hechos+=rs.filter(function(t){return t<=now}).length});
+  $('f-tot').textContent=vivos;$('f-tot-s').textContent=plan+' celdas por llenar';
+  $('f-act').textContent=trab;$('f-act-s').textContent=trab?'en este momento':'todos en su celda';
+  $('f-tur').textContent=hechos+'/'+turnos;$('f-tur-s').textContent='hechos / programados hoy';
+  $('nv-fab').textContent=vivos;
+  /* Planta */
+  var n=0;
+  $('v-planta').innerHTML='<div class="ala dir" style="--c:#FFC24B"><div class="ala-h"><i></i><b>Dirección</b><span>1 de 1</span></div><div class="celdas">'+celda(DIRECTOR,'#FFC24B',0,' director')+'</div></div>'+
+    AREAS.map(function(a){var ags=a.agentes.filter(pasa);if(!ags.length)return '';var v=a.agentes.filter(function(g){return !g.plan}).length;
+      return '<div class="ala" style="--c:'+a.c+'"><div class="ala-h"><i></i><b>'+esc(a.nombre)+'</b><span>'+v+' de '+a.agentes.length+'</span></div><div class="celdas">'+ags.map(function(g){n++;return celda(g,a.c,n)}).join('')+'</div></div>'}).join('');
+  /* Organigrama */
   var e=estado(DIRECTOR),ult=e.r&&e.r.ultima?new Date(e.r.ultima):null;
   $('boss').innerHTML='<span class="av">DI</span><div><b>Director</b><div class="role">'+esc(DIRECTOR.rol)+'</div></div><div class="mini2"><span>'+(ult?'Último resumen '+esc(hace(ult)):'Sin resumen todavía')+'</span><span>Próximo '+esc(cuando(nextRun(DIRECTOR)))+'</span></div>';
-  $('areas').innerHTML=AREAS.map(function(a){var n=a.agentes.filter(function(g){return !g.plan}).length;
-    return '<div class="area" style="--c:'+a.c+'"><div class="area-h"><i></i><b>'+esc(a.nombre)+'</b><span>'+n+' de '+a.agentes.length+'</span></div>'+a.agentes.map(tarjeta).join('')+'</div>'}).join('');
-  var trab=0;if(AG&&AG.agentes)Object.keys(AG.agentes).forEach(function(k){if(AG.agentes[k].enCurso)trab++});
-  $('f-act').textContent=vivos;$('f-act-s').textContent=(trab?trab+' trabajando ahora · ':'')+plan+' por construir';
-  $('nv-fab').textContent=vivos;
-  if(!AG||!AG.fabrica)return;
-  var F=AG.fabrica;$('f-env').textContent=F.enviadosHoy||0;$('f-pro').textContent=F.prospectosSemana||0;$('f-ok').textContent=F.esperanOK||0;
-  var act=(AG.actividad||[]);
-  if(act.length)$('feed').innerHTML=act.map(function(x){var t=new Date(x.t);
-    return '<li'+(x.mal?' class="bad"':'')+'><span class="ft">'+(x.soloFecha?esc(t.toLocaleDateString('es-MX',{day:'numeric',month:'short'})):esc(t.toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'})))+'</span><span class="fw" style="--c:'+(COLOR[x.agente]||'var(--dim)')+'">'+esc(x.agente)+'</span><span class="fm">'+esc(x.texto)+(x.detalle?' <small>· '+esc(x.detalle)+'</small>':'')+'</span></li>'}).join('');
+  $('areas').innerHTML=AREAS.map(function(a){var ags=a.agentes.filter(pasa);if(!ags.length)return '';var v=a.agentes.filter(function(g){return !g.plan}).length;
+    return '<div class="area" style="--c:'+a.c+'"><div class="area-h"><i></i><b>'+esc(a.nombre)+'</b><span>'+v+' de '+a.agentes.length+'</span></div>'+ags.map(tarjeta).join('')+'</div>'}).join('');
+  /* Director */
+  var act=(AG&&AG.actividad)||[];
+  $('cond').innerHTML='<div class="cond-h"><span class="dia"><i></i></span><div><b>DIRECTOR</b><small>El jefe de la fábrica · próximo resumen '+esc(cuando(nextRun(DIRECTOR)))+'</small></div></div>'+
+    '<div class="cond-log">'+(act.slice(0,3).map(function(x){return '<div><span>→ '+esc(String(x.agente).toUpperCase())+' · TABLERO</span>'+esc(x.texto)+(x.detalle?' <em>· '+esc(x.detalle)+'</em>':'')+'</div>'}).join('')||'<div><span>→ DIRECTOR · TABLERO</span>Todo en orden. Las novedades aparecen aquí cada hora.</div>')+'</div>'+
+    '<form id="cond-f"><input id="cond-in" placeholder="Pídele algo a la fábrica…" aria-label="Pedido para la fábrica"><button type="submit">ENVIAR</button></form>';
+  $('cond-f').addEventListener('submit',pedir);
+  if(AG&&AG.fabrica){var F=AG.fabrica;$('f-env').textContent=F.enviadosHoy||0;$('f-pro').textContent=(F.prospectosSemana||0)+' prospectos esta semana';$('f-ok').textContent=F.esperanOK||0;
+    var P=F.pendientes||[];if(P.length)$('pend').innerHTML=P.map(function(p){return '<li><i></i><b>'+esc(p.quien)+'</b><small>'+esc(p.que)+(p.negocio?' · '+esc(p.negocio):'')+'</small></li>'}).join('')}
+  /* Actividad */
+  var sel=$('f-area');if(sel.options.length<2)AREAS.concat([{nombre:'Dirección'}]).forEach(function(a){var o=document.createElement('option');o.value=a.nombre;o.textContent=a.nombre;sel.appendChild(o)});
+  var lista=act.filter(function(x){var g=TODOS[x.agente];return (!FAB.area||AREA_DE[x.agente]===FAB.area)&&(!FAB.b||!g||pasa(g))});
+  if(act.length)$('feed').innerHTML=lista.map(function(x,i){return '<li class="'+(x.mal?'bad':'')+(i===0?' cursor':'')+'"><span class="t">'+esc(hora(x))+'</span><span class="a" style="--c:'+(COLOR[x.agente]||'var(--dim)')+'">'+esc(x.agente)+'</span><span class="m">'+esc(x.texto)+(x.detalle?' <small>· '+esc(x.detalle)+'</small>':'')+'</span></li>'}).join('')||'<li><span class="m" style="color:var(--dim)">Sin actividad para este filtro.</span></li>';
+  grafica(act);
 }
-setInterval(renderFabrica,60000);
+function grafica(act){
+  var dias=[],ok={},mal={};for(var i=13;i>=0;i--){var d=iso(new Date(Date.now()-i*864e5));dias.push(d);ok[d]=0;mal[d]=0}
+  act.forEach(function(x){var d=iso(new Date(x.t));if(d in ok)(x.mal?mal:ok)[d]++});
+  var mx=Math.max.apply(null,dias.map(function(d){return ok[d]+mal[d]}))||1,W=560,H=150,bw=W/14;
+  $('f-chart').innerHTML='<svg class="chart" viewBox="0 0 '+W+' '+(H+20)+'" role="img" aria-label="Trabajo de los agentes por día">'+dias.map(function(d,i){
+    var h1=ok[d]/mx*(H-10),h2=mal[d]/mx*(H-10),x=i*bw+4;
+    return '<rect x="'+x+'" y="'+(H-h1)+'" width="'+(bw-8)+'" height="'+h1+'" rx="3" fill="var(--lime)" opacity=".85"><title>'+d+': '+ok[d]+' hechos</title></rect>'+
+      (h2?'<rect x="'+x+'" y="'+(H-h1-h2)+'" width="'+(bw-8)+'" height="'+h2+'" rx="3" fill="var(--rose)"><title>'+mal[d]+' con falla</title></rect>':'')+
+      (i%2===0?'<text x="'+(x+(bw-8)/2)+'" y="'+(H+14)+'" text-anchor="middle">'+(+d.slice(8))+'</text>':'')}).join('')+'</svg>';
+}
+function pedir(ev){ev.preventDefault();var t=$('cond-in').value.trim();if(!t)return;
+  var ir=function(){window.open(PROYECTO,'_blank','noopener');toast('Copié tu pedido. Pégalo en el proyecto de Claude.')};
+  if(navigator.clipboard)navigator.clipboard.writeText(t).then(ir,ir);else ir();$('cond-in').value=''}
+function toast(m){var d=document.createElement('div');d.className='toast';d.textContent=m;document.body.appendChild(d);setTimeout(function(){d.remove()},3500)}
+function ficha(nombre){var a=TODOS[nombre];if(!a)return;var e=estado(a),c=COLOR[nombre]||'var(--cyan)',r=e.r||{};
+  var mias=((AG&&AG.actividad)||[]).filter(function(x){return x.agente===nombre}).slice(0,8);
+  var v=document.createElement('div');v.className='velo';var f=document.createElement('aside');f.className='ficha';f.setAttribute('role','dialog');f.setAttribute('aria-label',nombre);
+  f.innerHTML='<button type="button" class="x">Cerrar</button><div><span class="pill" style="--c:'+e.c+'">'+e.txt+'</span></div><h3 style="color:'+c+'">'+esc(nombre)+'</h3><div class="rol">'+esc(a.rol)+'</div>'+
+    '<dl><dt>Área</dt><dd>'+esc(AREA_DE[nombre]||'')+'</dd>'+(a.plan?'<dt>Estado</dt><dd>Celda vacía. Se construye en una siguiente fase.</dd>':
+    '<dt>Horario</dt><dd>'+esc(a.horas.length>4?'Cada hora o cada 2 horas':a.horas.join(', '))+' · '+esc(a.dias.length===7?'todos los días':a.dias.map(function(d){return 'DLMMJVS'[d]}).join(' '))+'</dd>'+
+    '<dt>Última vez</dt><dd>'+(r.ultima?esc(cuando(new Date(r.ultima)))+' ('+esc(hace(new Date(r.ultima)))+')':'Sin corridas registradas')+'</dd>'+
+    '<dt>Próximas</dt><dd>'+nextRuns(a,3).map(function(t){return esc(cuando(t))}).join('<br>')+'</dd>'+(r.hoy?'<dt>Hoy</dt><dd>'+esc(r.hoy)+'</dd>':''))+'</dl>'+
+    (mias.length?'<div class="term"><ol>'+mias.map(function(x){return '<li class="'+(x.mal?'bad':'')+'"><span class="t">'+esc(hora(x))+'</span><span class="m">'+esc(x.texto)+(x.detalle?' <small>· '+esc(x.detalle)+'</small>':'')+'</span></li>'}).join('')+'</ol></div>':'')+
+    (a.link?'<a href="'+a.link+'" target="_blank" rel="noopener">Ver su trabajo →</a>':'');
+  function cerrar(){v.remove();f.remove();document.removeEventListener('keydown',tecla)}function tecla(ev){if(ev.key==='Escape')cerrar()}
+  v.addEventListener('click',cerrar);f.querySelector('.x').addEventListener('click',cerrar);document.addEventListener('keydown',tecla);
+  document.body.appendChild(v);document.body.appendChild(f);f.querySelector('.x').focus();
+}
+$('fabrica').addEventListener('click',function(ev){var b=ev.target.closest('[data-ag]');if(b)ficha(b.getAttribute('data-ag'))});
+document.querySelectorAll('.fab-tabs [data-v]').forEach(function(b){b.addEventListener('click',function(){FAB.vista=b.dataset.v;
+  document.querySelectorAll('.fab-tabs [data-v]').forEach(function(x){x.classList.toggle('on',x===b)});
+  ['planta','org','act'].forEach(function(v){$('v-'+v).hidden=v!==FAB.vista})})});
+$('chips').addEventListener('click',function(ev){var b=ev.target.closest('[data-b]');if(!b)return;FAB.b=b.dataset.b;
+  $('chips').querySelectorAll('.chip').forEach(function(x){x.classList.toggle('on',x===b)});renderFabrica()});
+$('f-area').addEventListener('change',function(){FAB.area=this.value;renderFabrica()});
+$('f-ok').parentNode.style.cursor='pointer';$('f-ok').parentNode.addEventListener('click',function(){document.querySelector('.fab-tabs [data-v="act"]').click()});
+setInterval(renderFabrica,30000);
 
 /* ---------------- Voz ---------------- */
 var voz=null;
