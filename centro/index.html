@@ -1112,9 +1112,10 @@ if('speechSynthesis' in window){elegirVoz();speechSynthesis.onvoiceschanged=eleg
 function decir(t){vlog('ai',t);if(!('speechSynthesis' in window))return;speechSynthesis.cancel();
   var u=new SpeechSynthesisUtterance(t.replace(/\$/g,'').replace(/·/g,','));u.lang='es-MX';if(vozNav)u.voice=vozNav;u.rate=1;u.pitch=1.05;
   u.onstart=function(){VS.habla=true;vst('habla','Hablando')};u.onend=u.onerror=function(){VS.habla=false;vst('lista','Lista para hablar')};speechSynthesis.speak(u)}
+function respaldo(q){clearTimeout(VS.tr);VS.env=false;VS.tr=setTimeout(function(){VS.tr=null;decir(respuestaLocal(q))},12000)}
 function preguntar(q){q=String(q||'').trim();if(!q)return;vlog('yo',q);
-  if(VS.conv){VS.conv.sendUserMessage(q);return}
-  if(VCFG.agentId){VS.pend=q;if(!$('vera-call').classList.contains('on'))iniciarEL();return}
+  if(VS.conv){respaldo(q);VS.conv.sendUserMessage(q);VS.env=true;return}
+  if(VCFG.agentId){VS.pend=q;respaldo(q);if(!$('vera-call').classList.contains('on'))iniciarEL();return}
   decir(respuestaLocal(q))}
 /* ElevenLabs: conversación de voz en tiempo real */
 function vozActiva(on){var b=$('vera-call');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);$('vera-call-t').textContent=on?'Terminar':'Hablar con Vera';$('mic').classList.toggle('on',on)}
@@ -1131,14 +1132,14 @@ function iniciarEL(){
         datos_actuales:function(){return contexto()}
       },
       onConnect:function(){vst('escucha','Te escucho');$('vera-nota').textContent=''},
-      onDisconnect:function(){VS.conv=null;vozActiva(false);vst('lista','Lista para hablar')},
+      onDisconnect:function(d){VS.conv=null;vozActiva(false);vst('lista','Lista para hablar');var m=d&&(d.message||(d.context&&d.context.reason)||d.reason);if(m&&m!=='user')$('vera-nota').textContent='ElevenLabs cortó la conexión: '+String(m).slice(0,160);if(VS.tr){clearTimeout(VS.tr);VS.tr=null;var u=[].slice.call(document.querySelectorAll('#vera-log .yo')).pop();if(u)decir(respuestaLocal(u.textContent))}},
       onModeChange:function(p){VS.mode=p.mode;vst(p.mode==='speaking'?'habla':'escucha',p.mode==='speaking'?'Hablando':'Te escucho')},
-      onMessage:function(p){if(p&&p.message&&(p.source==='ai'||p.role==='agent'))vlog('ai',p.message);else if(p&&p.message)vlog('yo',p.message)},
+      onMessage:function(p){if(p&&p.message&&(p.source==='ai'||p.role==='agent')){if(VS.env){clearTimeout(VS.tr);VS.tr=null}vlog('ai',p.message)}else if(p&&p.message)vlog('yo',p.message)},
       onError:function(msg){$('vera-nota').textContent='ElevenLabs: '+msg}
-    })}).then(function(c){VS.conv=c;try{c.sendContextualUpdate('Eres Vera, la directora de operaciones con IA de Santiago. Usa estos datos en vivo del Centro de Mando para responder con precisión, razonar, comparar y recomendar el siguiente paso. Si algo no está aquí, dilo; no inventes.\n'+contexto())}catch(e){}if(VS.pend){c.sendUserMessage(VS.pend);VS.pend=null}}).catch(function(e){VS.conv=null;vozActiva(false);vst('lista','Lista para hablar');
+    })}).then(function(c){VS.conv=c;try{c.sendContextualUpdate('Eres Vera, la directora de operaciones con IA de Santiago. Usa estos datos en vivo del Centro de Mando para responder con precisión, razonar, comparar y recomendar el siguiente paso. Si algo no está aquí, dilo; no inventes.\n'+contexto())}catch(e){}if(VS.pend){c.sendUserMessage(VS.pend);VS.env=true;VS.pend=null}}).catch(function(e){VS.conv=null;vozActiva(false);vst('lista','Lista para hablar');
       var det=String((e&&(e.message||e.reason||e.name))||e||'');
       $('vera-nota').textContent=/NotFound|device not found/i.test(det)?'No encuentro un micrófono en este equipo. Conecta uno (o usa el iPhone) para oír mi voz.':/Permission|NotAllowed/i.test(det)?'Necesito permiso del micrófono para hablarte con mi voz. Actívalo en el candado de la barra de direcciones.':'No pude conectar mi voz de ElevenLabs ('+det.slice(0,140)+'). Revisa que el agente sea público o permita novatransports.github.io.';
-      if(VS.pend){decir(respuestaLocal(VS.pend));VS.pend=null}});
+      clearTimeout(VS.tr);VS.tr=null;if(VS.pend){decir(respuestaLocal(VS.pend));VS.pend=null}});
 }
 function terminarEL(){if(VS.conv){VS.conv.endSession();VS.conv=null}vozActiva(false);vst('lista','Lista para hablar')}
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null;
