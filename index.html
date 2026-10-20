@@ -1871,6 +1871,17 @@ body.dark-mode .ds-card.alt {
       </div>
 
       <div class="fg" style="margin-top:1.2rem">
+        <label class="fl">Datos del chofer (editables para este PDF)</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+          <input id="conf-chofer" placeholder="Nombre del chofer" oninput="renderConfirmSummary()" style="padding:9px 11px;border:1px solid var(--bo);border-radius:6px;font-size:13px;font-family:inherit">
+          <input id="conf-chofer-tel" placeholder="Teléfono del chofer" oninput="renderConfirmSummary()" style="padding:9px 11px;border:1px solid var(--bo);border-radius:6px;font-size:13px;font-family:inherit">
+          <input id="conf-vehiculo" placeholder="Vehículo (ej: Suburban blanca)" oninput="renderConfirmSummary()" style="padding:9px 11px;border:1px solid var(--bo);border-radius:6px;font-size:13px;font-family:inherit">
+          <input id="conf-placa" placeholder="Placas (ej: JAL-123-ABC)" oninput="renderConfirmSummary()" style="padding:9px 11px;border:1px solid var(--bo);border-radius:6px;font-size:13px;font-family:inherit">
+        </div>
+        <div style="font-size:11px;color:#999;margin-top:6px">Déjalos vacíos para que el PDF diga "Por asignar". Si llenas alguno, aparece en el PDF.</div>
+      </div>
+
+      <div class="fg" style="margin-top:1.2rem">
         <label class="fl">Resumen</label>
         <div id="conf-summary" style="padding:14px;background:var(--n0);border:1px solid var(--bo);border-radius:6px;font-size:12px;line-height:1.7;color:var(--c0)"></div>
       </div>
@@ -2874,6 +2885,15 @@ function openConfirm(id){
   var ph=(s.phone||'').replace(/\s|-|\(|\)/g,'');
   _confirmLang=(ph.indexOf('+52')===0||(ph.indexOf('52')===0&&ph.length<=13))?'es':'en';
   _confirmPay='auto';
+  // Prefill editable chauffeur fields from service data (if any)
+  var fChofer=document.getElementById('conf-chofer');
+  var fChoferTel=document.getElementById('conf-chofer-tel');
+  var fVehiculo=document.getElementById('conf-vehiculo');
+  var fPlaca=document.getElementById('conf-placa');
+  if(fChofer)fChofer.value=s.chofer||'';
+  if(fChoferTel)fChoferTel.value=s.choferTel||'';
+  if(fVehiculo)fVehiculo.value=s.vehicle||'';
+  if(fPlaca)fPlaca.value=s.plate||'';
   document.querySelectorAll('.conf-lang').forEach(function(b){
     var on=b.getAttribute('data-lang')===_confirmLang;
     b.classList.toggle('active',on);
@@ -2949,9 +2969,24 @@ function _confirmFmtTimeEN(t){
   return (h12<10?'0'+h12:h12)+':'+m+' '+ampm;
 }
 
+// Build a merged service object: original + manual overrides from the modal
+function _getConfirmSvcMerged(){
+  if(!_confirmSvc)return null;
+  var s=Object.assign({},_confirmSvc);
+  var fChofer=document.getElementById('conf-chofer');
+  var fChoferTel=document.getElementById('conf-chofer-tel');
+  var fVehiculo=document.getElementById('conf-vehiculo');
+  var fPlaca=document.getElementById('conf-placa');
+  if(fChofer)s.chofer=fChofer.value.trim();
+  if(fChoferTel)s.choferTel=fChoferTel.value.trim();
+  if(fVehiculo&&fVehiculo.value.trim())s.vehicle=fVehiculo.value.trim();
+  if(fPlaca)s.plate=fPlaca.value.trim();
+  return s;
+}
+
 function renderConfirmSummary(){
   if(!_confirmSvc)return;
-  var s=_confirmSvc,lang=_confirmLang;
+  var s=_getConfirmSvcMerged(),lang=_confirmLang;
   var payState=_resolvePayState(s);
   var isPaid=payState==='paid';
   var payBadge=isPaid
@@ -2965,6 +3000,11 @@ function renderConfirmSummary(){
     html+='<b>Ruta:</b> '+(s.origin||'—')+' → '+(s.dest||'—')+'<br>';
     html+='<b>Pasajeros:</b> '+(s.pax||'1');
     if(s.flight)html+=' · <b>Vuelo:</b> '+s.flight;
+    if(s.chofer||s.vehicle||s.plate){
+      html+='<br><b>Chofer:</b> '+(s.chofer||'Por asignar');
+      if(s.vehicle)html+=' · '+s.vehicle;
+      if(s.plate)html+=' · '+s.plate;
+    }
     if(s.cost!=null&&s.cost!=='')html+='<br><b>Pago:</b> '+(s.payment||'—')+'  '+payBadge+override;
   }else{
     html='<b>Guest:</b> '+(s.name||'—')+'<br>';
@@ -2972,6 +3012,11 @@ function renderConfirmSummary(){
     html+='<b>Route:</b> '+(s.origin||'—')+' → '+(s.dest||'—')+'<br>';
     html+='<b>Passengers:</b> '+(s.pax||'1');
     if(s.flight)html+=' · <b>Flight:</b> '+s.flight;
+    if(s.chofer||s.vehicle||s.plate){
+      html+='<br><b>Chauffeur:</b> '+(s.chofer||'TBD');
+      if(s.vehicle)html+=' · '+s.vehicle;
+      if(s.plate)html+=' · '+s.plate;
+    }
     if(s.cost!=null&&s.cost!=='')html+='<br><b>Payment:</b> '+(s.payment||'—')+'  '+payBadge+override;
   }
   document.getElementById('conf-summary').innerHTML=html;
@@ -2979,7 +3024,7 @@ function renderConfirmSummary(){
 
 function genConfirmPDF(){
   if(!_confirmSvc)return;
-  var s=_confirmSvc,lang=_confirmLang;
+  var s=_getConfirmSvcMerged(),lang=_confirmLang;
   var jsPDF=window.jspdf.jsPDF;
   var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
   var W=210,H=297;
