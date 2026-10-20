@@ -3027,7 +3027,10 @@ function genConfirmPDF(){
     doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(mid[0],mid[1],mid[2]);
     doc.setCharSpace(1.5);doc.text(label.toUpperCase(),14,y);doc.setCharSpace(0);
     doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(ink[0],ink[1],ink[2]);
-    doc.text(value||'—',14,y+5);
+    // If only 1 column (no col2Label), allow full width for the value
+    var maxW=col2Label?(W/2-18):(W-28);
+    var lines=doc.splitTextToSize(value||'—',maxW);
+    doc.text(lines,14,y+5);
     if(col2Label){
       doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(mid[0],mid[1],mid[2]);
       doc.setCharSpace(1.5);doc.text(col2Label.toUpperCase(),W/2,y);doc.setCharSpace(0);
@@ -3038,12 +3041,17 @@ function genConfirmPDF(){
 
   // SERVICE DETAILS
   sectionTitle(lang==='es'?'DETALLES DEL SERVICIO':'SERVICE DETAILS');
+  // Huésped (nombre completo tal como se cargó al crear el servicio)
+  row(lang==='es'?'Huésped':'Guest', s.name||'—', '', '');
+  // If guest name wrapped to 2 lines, add extra space
+  var guestLines=doc.splitTextToSize(s.name||'—',W-28).length;
+  y+=guestLines>1?16:12;
   var fechaStr=lang==='es'?_confirmFmtDateES(s.date):_confirmFmtDateEN(s.date);
   var horaStr=lang==='es'?((s.time||'—')+' hrs'):_confirmFmtTimeEN(s.time);
   row(lang==='es'?'Fecha':'Date', fechaStr, lang==='es'?'Hora':'Time', horaStr);y+=14;
   row(lang==='es'?'Origen':'Pick-up', s.origin||'—', lang==='es'?'Destino':'Drop-off', s.dest||'—');y+=14;
   var paxStr=(s.pax||'1')+' '+(lang==='es'?((s.pax||1)==1?'pasajero':'pasajeros'):((s.pax||1)==1?'passenger':'passengers'));
-  row(lang==='es'?'Pasajeros':'Passengers', paxStr, lang==='es'?'Vuelo':'Flight', s.flight||(lang==='es'?'No aplica':'N/A'));y+=18;
+  row(lang==='es'?'Pasajeros':'Passengers', paxStr, lang==='es'?'Vuelo':'Flight', s.flight||(lang==='es'?'No aplica':'N/A'));y+=16;
 
   // CHAUFFEUR
   sectionTitle(lang==='es'?'SU CHOFER':'YOUR CHAUFFEUR');
@@ -3116,7 +3124,7 @@ function genConfirmPDF(){
   }
 
   // Footer
-  var footerY=H-32;
+  var footerY=H-28;
   doc.setDrawColor(gold[0],gold[1],gold[2]);doc.setLineWidth(0.4);
   doc.line(14,footerY,W-14,footerY);
   doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(ink[0],ink[1],ink[2]);
