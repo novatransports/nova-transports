@@ -67,8 +67,8 @@ input[type="time"]{-webkit-appearance:none}
 .lhint{margin-top:1.4rem;padding-top:1.1rem;border-top:.5px solid #F0F0F0;font-size:11px;color:#AAA;text-align:center;line-height:2.1}
 .lhint b{color:#555;font-weight:500}
 #scr-app{flex-direction:row}
-.sb{width:220px;flex-shrink:0;background:#0E2A22;border-right:none;display:flex;flex-direction:column;height:100vh;overflow:hidden;transition:transform .3s;box-shadow:2px 0 16px rgba(0,0,0,.15)}
-.sb-top{padding:1.2rem 1.1rem 1rem;border-bottom:.5px solid #222;flex-shrink:0;border-top:3px solid #1B6B4F}
+.sb{width:220px;flex-shrink:0;background:var(--nv-bg2,#050B14);background-image:radial-gradient(ellipse 100% 50% at 0% 0%,var(--nv-acc,#1E3A5F) 0%,transparent 55%),linear-gradient(180deg,var(--nv-bg1,#0A1628) 0%,var(--nv-bg2,#050B14) 100%);border-right:none;display:flex;flex-direction:column;height:100vh;overflow:hidden;transition:transform .3s,background-image 400ms;box-shadow:2px 0 16px rgba(0,0,0,.15)}
+.sb-top{padding:1.2rem 1.1rem 1rem;border-bottom:.5px solid rgba(255,255,255,.08);flex-shrink:0;border-top:3px solid var(--nv-acc,#1E3A5F);transition:border-color 400ms}
 .sb-lr{display:flex;align-items:center;gap:8px}
 .sb-li{width:30px;height:30px;border:.5px solid var(--bo2);border-radius:6px;display:flex;align-items:center;justify-content:center;background:var(--aubg);flex-shrink:0}
 .sb-li i{font-size:14px;color:var(--au)}
@@ -1439,14 +1439,51 @@ input:focus,select:focus,textarea:focus{border-color:#0A0A0A!important;outline:n
 #scr-login .nv-left-copy p{font-family:'Inter',sans-serif;font-size:14px;line-height:1.55;color:rgba(245,242,236,0.65);letter-spacing:-0.005em;margin:0}
 #scr-login .nv-left-foot{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;font-family:'Inter',sans-serif;font-size:11.5px;color:rgba(245,242,236,0.45);letter-spacing:0.01em}
 #scr-login .nv-left-foot .nv-dot{width:6px;height:6px;border-radius:50%;background:var(--nv-hl,#8CA8D4);box-shadow:0 0 0 4px color-mix(in srgb,var(--nv-hl,#8CA8D4) 15%,transparent);display:inline-block;margin-right:6px;vertical-align:middle;transition:background 400ms,box-shadow 400ms}
-#scr-login .nv-right{flex:1 1 50%;background:#FFFFFF;display:flex;align-items:center;justify-content:center;padding:40px 32px;position:relative}
+#scr-login .nv-right{flex:1 1 50%;background:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;position:relative;gap:20px}
 #scr-login .nv-right-top{position:absolute;top:28px;right:32px;font-family:'Inter',sans-serif;font-size:12.5px;color:#737373;letter-spacing:-0.005em}
 #scr-login .lcard .lem,#scr-login .lcard .lbrand,#scr-login .lcard .lsub,#scr-login .lcard .lf label,#scr-login .lcard .lhint{text-transform:none!important}
 #scr-login .lcard .lsub{text-transform:none!important;font-size:14px!important;color:#737373!important;letter-spacing:-0.005em!important}
 #scr-login .lcard .lbrand{text-transform:none!important;font-size:28px!important;color:#0A0A0A!important;font-weight:600!important;letter-spacing:-0.03em!important}
 #scr-login .lcard .lf label{text-transform:none!important;font-size:12.5px!important;color:#171717!important;font-weight:500!important;letter-spacing:-0.005em!important}
 #scr-login .nv-right-top a{color:#0A0A0A;font-weight:500;text-decoration:none;border-bottom:1px solid #E8E8E8;padding-bottom:1px}
-@media(max-width:900px){#scr-login{flex-direction:column!important}#scr-login .nv-left{flex:0 0 220px;padding:24px}#scr-login .nv-left-copy h1{font-size:34px}#scr-login .nv-right{flex:1}#scr-login .nv-left-foot{display:none}}
+@media(max-width:900px){
+  #scr-login.on{flex-direction:column!important;overflow-y:auto!important}
+  #scr-login .nv-left{flex:0 0 auto!important;min-height:200px;padding:22px 20px!important}
+  #scr-login .nv-left-copy h1{font-size:28px!important;line-height:1.05!important;margin:0 0 10px!important}
+  #scr-login .nv-left-copy p{font-size:12.5px!important}
+  #scr-login .nv-left-brand img{width:92px!important}
+  #scr-login .nv-right{flex:1 1 auto!important;padding:28px 20px!important;min-height:420px}
+  #scr-login .nv-right-top{position:static!important;text-align:right;margin-bottom:16px;font-size:11.5px!important}
+  #scr-login .nv-left-foot{display:none!important}
+  #scr-login .lcard{max-width:100%!important}
+  #scr-login .lcard .lbrand{font-size:22px!important}
+  #scr-login .lcard .lsub{font-size:12.5px!important}
+}
+@media(max-width:480px){
+  #scr-login .nv-left{min-height:170px;padding:18px 16px!important}
+  #scr-login .nv-left-copy h1{font-size:24px!important}
+  #scr-login .nv-right{padding:22px 16px!important}
+  #scr-login .lcard .lbrand{font-size:20px!important}
+}
+/* Theme picker — mobile */
+@media(max-width:768px){
+  #btn-theme span.hide-mobile,#btn-theme #theme-name{display:none!important}
+  #btn-theme{padding:5px 6px!important}
+  #theme-picker{min-width:200px!important;right:-6px!important;max-width:calc(100vw - 24px)}
+}
+/* Topbar in general — mobile tightening */
+@media(max-width:640px){
+  .topbar{padding:10px 12px!important;gap:6px;min-height:52px}
+  .tb-l .tb-tit{font-size:14px!important}
+  .tb-r{gap:4px!important}
+  .tb-r > span:first-child,.tb-r .wx-mini,.tb-r .tb-dt{display:none!important}
+  .tb-r .btn-sec,.tb-r .btn-pri{padding:7px 10px!important;font-size:12px!important}
+  .tb-r .btn-sec .ti,.tb-r .btn-pri .ti{font-size:14px}
+  #btn-cost-lock{display:none!important}
+}
+@media(max-width:420px){
+  .tb-r .btn-sec span{display:none}
+}
 .lcard{background:transparent!important;border:none!important;border-radius:0!important;padding:0!important;max-width:400px!important;width:100%!important;box-shadow:none!important}
 .lem{text-align:center;margin-bottom:18px}
 .lbrand{color:#0A0A0A!important;font-size:22px!important;letter-spacing:-0.025em!important}
@@ -1503,6 +1540,13 @@ window.applyNovaTheme = function(id){
   r.style.setProperty('--nv-acc', t.acc);
   r.style.setProperty('--nv-hl', t.hl);
   r.style.setProperty('--nv-emh', t.emh);
+  // Also sync the dashboard accent vars so badges, buttons, focus, links adopt the theme color
+  r.style.setProperty('--au', t.acc);
+  // Darker version for hover/pressed
+  r.style.setProperty('--au3', t.bg1);
+  // Soft bg (10% alpha) — convert hex to rgb
+  var hex = t.acc.replace('#',''); var rr=parseInt(hex.substr(0,2),16), gg=parseInt(hex.substr(2,2),16), bb=parseInt(hex.substr(4,2),16);
+  r.style.setProperty('--aubg', 'rgba('+rr+','+gg+','+bb+',.1)');
   try{ localStorage.setItem('nova_theme', id); }catch(e){}
   var dot = document.getElementById('theme-dot'); if(dot) dot.style.background = t.dot;
   var nm = document.getElementById('theme-name'); if(nm) nm.textContent = t.name;
@@ -1540,7 +1584,6 @@ document.addEventListener('click', function(e){
 (function(){
   var saved = 'midnight';
   try{ saved = localStorage.getItem('nova_theme') || 'midnight'; }catch(e){}
-  // Need to wait for DOM for picker UI, but set CSS vars now
   var t = window.NOVA_THEMES[saved] || window.NOVA_THEMES.midnight;
   var r = document.documentElement;
   r.style.setProperty('--nv-bg1', t.bg1);
@@ -1548,6 +1591,10 @@ document.addEventListener('click', function(e){
   r.style.setProperty('--nv-acc', t.acc);
   r.style.setProperty('--nv-hl', t.hl);
   r.style.setProperty('--nv-emh', t.emh);
+  r.style.setProperty('--au', t.acc);
+  r.style.setProperty('--au3', t.bg1);
+  var hex = t.acc.replace('#',''); var rr=parseInt(hex.substr(0,2),16), gg=parseInt(hex.substr(2,2),16), bb=parseInt(hex.substr(4,2),16);
+  r.style.setProperty('--aubg', 'rgba('+rr+','+gg+','+bb+',.1)');
   document.addEventListener('DOMContentLoaded', function(){
     var dot = document.getElementById('theme-dot'); if(dot) dot.style.background = t.dot;
     var nm = document.getElementById('theme-name'); if(nm) nm.textContent = t.name;
