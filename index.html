@@ -1428,17 +1428,17 @@ input:focus,select:focus,textarea:focus{border-color:#0A0A0A!important;outline:n
 #scr-login .login-bg,#scr-login .login-bg-img,#scr-login .login-bg-overlay{display:none!important}
 #scr-login{background:#FFFFFF!important;display:flex!important;flex-direction:row!important;align-items:stretch!important;justify-content:flex-start!important;padding:0!important}
 #scr-login.scr.on{display:flex!important;position:fixed;inset:0;z-index:9999}
-#scr-login .nv-left{flex:1 1 50%;position:relative;overflow:hidden;background:#0A1F17;background-image:radial-gradient(ellipse 90% 60% at 20% 20%,#1B6B4F 0%,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 85%,#0E3B2A 0%,transparent 60%),linear-gradient(135deg,#0A1F17 0%,#061410 100%);display:flex;flex-direction:column;justify-content:space-between;padding:40px 48px;color:#F5F2EC}
+#scr-login .nv-left{flex:1 1 50%;position:relative;overflow:hidden;background:var(--nv-bg2,#050B14);background-image:radial-gradient(ellipse 90% 60% at 20% 20%,var(--nv-acc,#1E3A5F) 0%,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 85%,var(--nv-bg1,#0A1628) 0%,transparent 60%),linear-gradient(135deg,var(--nv-bg1,#0A1628) 0%,var(--nv-bg2,#050B14) 100%);display:flex;flex-direction:column;justify-content:space-between;padding:40px 48px;color:#F5F2EC;transition:background-image 400ms}
 #scr-login .nv-left::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95 0 0 0 0 0.93 0 0 0 0 0.87 0 0 0 0.08 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");opacity:.5;mix-blend-mode:overlay;pointer-events:none}
 #scr-login .nv-left::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);pointer-events:none}
 #scr-login .nv-left-brand{position:relative;z-index:2;display:flex;align-items:center;gap:10px;font-family:'Satoshi','Inter',sans-serif;font-weight:500;font-size:15px;letter-spacing:-0.01em;color:#F5F2EC}
 #scr-login .nv-left-brand .nv-logo{width:32px;height:32px;border-radius:8px;background:rgba(245,242,236,0.08);backdrop-filter:blur(6px);border:1px solid rgba(245,242,236,0.14);display:inline-flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;letter-spacing:-0.02em}
 #scr-login .nv-left-copy{position:relative;z-index:2;max-width:460px}
 #scr-login .nv-left-copy h1{font-family:'Instrument Serif','Playfair Display',Georgia,serif;font-weight:400;font-size:52px;line-height:1.02;letter-spacing:-0.025em;color:#FFFFFF;margin:0 0 16px}
-#scr-login .nv-left-copy h1 em{font-style:italic;color:#C9B98A}
+#scr-login .nv-left-copy h1 em{font-style:italic;color:var(--nv-emh,#C9B98A);transition:color 400ms}
 #scr-login .nv-left-copy p{font-family:'Inter',sans-serif;font-size:14px;line-height:1.55;color:rgba(245,242,236,0.65);letter-spacing:-0.005em;margin:0}
 #scr-login .nv-left-foot{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;font-family:'Inter',sans-serif;font-size:11.5px;color:rgba(245,242,236,0.45);letter-spacing:0.01em}
-#scr-login .nv-left-foot .nv-dot{width:6px;height:6px;border-radius:50%;background:#5EBE8E;box-shadow:0 0 0 4px rgba(94,190,142,0.15);display:inline-block;margin-right:6px;vertical-align:middle}
+#scr-login .nv-left-foot .nv-dot{width:6px;height:6px;border-radius:50%;background:var(--nv-hl,#8CA8D4);box-shadow:0 0 0 4px color-mix(in srgb,var(--nv-hl,#8CA8D4) 15%,transparent);display:inline-block;margin-right:6px;vertical-align:middle;transition:background 400ms,box-shadow 400ms}
 #scr-login .nv-right{flex:1 1 50%;background:#FFFFFF;display:flex;align-items:center;justify-content:center;padding:40px 32px;position:relative}
 #scr-login .nv-right-top{position:absolute;top:28px;right:32px;font-family:'Inter',sans-serif;font-size:12.5px;color:#737373;letter-spacing:-0.005em}
 #scr-login .lcard .lem,#scr-login .lcard .lbrand,#scr-login .lcard .lsub,#scr-login .lcard .lf label,#scr-login .lcard .lhint{text-transform:none!important}
@@ -1483,6 +1483,77 @@ input:focus,select:focus,textarea:focus{border-color:#0A0A0A!important;outline:n
 .sec-head-dash h3{font-family:'Satoshi','Inter',sans-serif!important;font-weight:500!important;font-size:18px!important;color:#171717!important;letter-spacing:-0.02em!important;margin:0!important;text-transform:none!important}
 .sec-head-dash h3 .count{color:#A3A3A3;margin-left:7px;font-weight:500}
 </style>
+<script>
+// Nova theme system — 6 paletas aplicables al login + acentos
+window.NOVA_THEMES = {
+  midnight:   {name:'Midnight',   dot:'#1E3A5F', bg1:'#0A1628', bg2:'#050B14', acc:'#1E3A5F', hl:'#8CA8D4', emh:'#C9B98A'},
+  nova:       {name:'Verde Nova', dot:'#1B6B4F', bg1:'#0A1F17', bg2:'#061410', acc:'#1B6B4F', hl:'#5EBE8E', emh:'#C9B98A'},
+  bordeaux:   {name:'Burdeos',    dot:'#6B1B3F', bg1:'#1F0A14', bg2:'#140608', acc:'#6B1B3F', hl:'#D4A5BE', emh:'#E8C890'},
+  graphite:   {name:'Grafito',    dot:'#262626', bg1:'#141414', bg2:'#000000', acc:'#404040', hl:'#D4D4D4', emh:'#D4C8A0'},
+  terracotta: {name:'Terracota',  dot:'#8B4A2B', bg1:'#1F140A', bg2:'#140A06', acc:'#8B4A2B', hl:'#E8B088', emh:'#F5D0A0'},
+  marina:     {name:'Marina',     dot:'#2A6B6B', bg1:'#0A1A1F', bg2:'#061014', acc:'#2A6B6B', hl:'#8ED4D4', emh:'#C9D4A0'},
+  slate:      {name:'Pizarra',    dot:'#3A4A5F', bg1:'#141A24', bg2:'#0A0E14', acc:'#3A4A5F', hl:'#AEBED4', emh:'#D4C090'},
+  rose:       {name:'Rosa',       dot:'#8B4A5F', bg1:'#1F0F14', bg2:'#140608', acc:'#8B4A5F', hl:'#E8B0C0', emh:'#F5C8A0'}
+};
+window.applyNovaTheme = function(id){
+  var t = window.NOVA_THEMES[id] || window.NOVA_THEMES.midnight;
+  var r = document.documentElement;
+  r.style.setProperty('--nv-bg1', t.bg1);
+  r.style.setProperty('--nv-bg2', t.bg2);
+  r.style.setProperty('--nv-acc', t.acc);
+  r.style.setProperty('--nv-hl', t.hl);
+  r.style.setProperty('--nv-emh', t.emh);
+  try{ localStorage.setItem('nova_theme', id); }catch(e){}
+  var dot = document.getElementById('theme-dot'); if(dot) dot.style.background = t.dot;
+  var nm = document.getElementById('theme-name'); if(nm) nm.textContent = t.name;
+};
+window.toggleThemePicker = function(){
+  var p = document.getElementById('theme-picker');
+  if(!p) return;
+  var open = p.style.display === 'block';
+  p.style.display = open ? 'none' : 'block';
+  if(!open){
+    var list = document.getElementById('theme-list');
+    if(list && !list.children.length){
+      Object.keys(window.NOVA_THEMES).forEach(function(id){
+        var t = window.NOVA_THEMES[id];
+        var row = document.createElement('button');
+        row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 10px;background:transparent;border:none;border-radius:8px;cursor:pointer;font-family:Inter,sans-serif;font-size:13px;color:#171717;text-align:left;transition:background 120ms;letter-spacing:-0.005em';
+        row.onmouseover = function(){ this.style.background = '#F5F5F5'; };
+        row.onmouseout = function(){ this.style.background = 'transparent'; };
+        row.onclick = function(){ window.applyNovaTheme(id); document.getElementById('theme-picker').style.display='none'; };
+        row.innerHTML = '<span style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,'+t.bg1+' 0%,'+t.acc+' 60%,'+t.bg2+' 100%);box-shadow:inset 0 0 0 1px rgba(0,0,0,0.08);flex-shrink:0"></span><span style="flex:1">'+t.name+'</span>';
+        list.appendChild(row);
+      });
+    }
+  }
+};
+// Click outside to close
+document.addEventListener('click', function(e){
+  var p = document.getElementById('theme-picker');
+  var b = document.getElementById('btn-theme');
+  if(p && b && p.style.display==='block' && !p.contains(e.target) && !b.contains(e.target)){
+    p.style.display='none';
+  }
+});
+// Apply saved theme ASAP (before any render)
+(function(){
+  var saved = 'midnight';
+  try{ saved = localStorage.getItem('nova_theme') || 'midnight'; }catch(e){}
+  // Need to wait for DOM for picker UI, but set CSS vars now
+  var t = window.NOVA_THEMES[saved] || window.NOVA_THEMES.midnight;
+  var r = document.documentElement;
+  r.style.setProperty('--nv-bg1', t.bg1);
+  r.style.setProperty('--nv-bg2', t.bg2);
+  r.style.setProperty('--nv-acc', t.acc);
+  r.style.setProperty('--nv-hl', t.hl);
+  r.style.setProperty('--nv-emh', t.emh);
+  document.addEventListener('DOMContentLoaded', function(){
+    var dot = document.getElementById('theme-dot'); if(dot) dot.style.background = t.dot;
+    var nm = document.getElementById('theme-name'); if(nm) nm.textContent = t.name;
+  });
+})();
+</script>
 </head>
 <body>
 
@@ -1563,6 +1634,16 @@ input:focus,select:focus,textarea:focus{border-color:#0A0A0A!important;outline:n
         <span><span class="sync-dot"></span><span style="font-size:10px;color:var(--c2)">En vivo</span></span>
         <div id="weather-mini" class="wx-mini" title="Clima en Guadalajara"></div>
         <button id="btn-dark" onclick="toggleDark()" title="Modo oscuro" style="padding:5px 8px;background:transparent;border:1px solid var(--bo);border-radius:6px;color:var(--c2);font-size:14px;cursor:pointer">🌙</button>
+        <div style="position:relative;display:inline-block">
+          <button id="btn-theme" onclick="toggleThemePicker()" title="Cambiar paleta" style="padding:5px 8px;background:transparent;border:1px solid var(--bo);border-radius:6px;color:var(--c2);font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+            <span id="theme-dot" style="width:10px;height:10px;border-radius:50%;background:#1E3A5F;display:inline-block;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.1)"></span>
+            <span style="font-size:11.5px;letter-spacing:-0.005em" class="hide-mobile" id="theme-name">Midnight</span>
+          </button>
+          <div id="theme-picker" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid #E8E8E8;border-radius:12px;padding:10px;box-shadow:0 10px 32px rgba(0,0,0,0.08);z-index:1000;min-width:220px">
+            <div style="font-family:'Inter',sans-serif;font-size:10.5px;color:#A3A3A3;text-transform:uppercase;letter-spacing:0.08em;padding:4px 8px 8px">Paleta</div>
+            <div id="theme-list" style="display:flex;flex-direction:column;gap:2px"></div>
+          </div>
+        </div>
         <div class="tb-dt" id="tbd"></div>
         <button class="btn-sec" onclick="openNew()"><i class="ti ti-plus"></i><span class="hide-mobile"> Nuevo Servicio</span></button>
         <button class="btn-sec" id="btn-cost-lock" style="display:none" onclick="showCostAuth()" title="Ver costos"><i class="ti ti-lock"></i></button>
